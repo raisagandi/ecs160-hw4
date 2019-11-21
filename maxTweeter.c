@@ -53,9 +53,7 @@ void readFile(char* fileName)
 {
 	int posNameColumn = 0, posTextColumn = 0, index = 0;
 	char nameHeader[] = "name";
-	char textHeader[] = "text";
 	char line[MAXCHARS];
-	//char delim[1] = ",";
 	FILE* fp = fopen(fileName, "r");	
 
 	// Check position of name and tweet in the csv file
@@ -67,16 +65,11 @@ void readFile(char* fileName)
 	{
 		if (strcmp(nameHeader, token) == 0)
                         posNameColumn = index;
-                if (strcmp(textHeader, token) == 0)
-                        posTextColumn = index;
-		printf("%s\n", token);
-		printf("%d\n", index);
 		token = strtok(NULL, ",");
 		index += 1;
 	}	
 
-	printf("posNameColumn: %d\n", posNameColumn);
-	printf("posTextColumn: %d\n", posTextColumn);
+	// Now, read the tweets	
 }
 
 
