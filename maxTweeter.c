@@ -17,9 +17,16 @@
 #include <string.h>
 #include <stdbool.h>
 
-bool fileOpenCheck(char* fileName)
+#define MAXCHARS (1024)
+#define MAXLENFILE (20000)
+
+/**
+ * return true if file is valid
+ * return false otherwise
+ */
+bool fileCheck(char* fileName)
 {
-	if(fileName == NULL)
+	if (fileName == NULL)
 	{
 		printf("Invalid Input Format\n");
 		return false;
@@ -41,19 +48,51 @@ bool fileOpenCheck(char* fileName)
 	return false;
 }
 
+
+void readFile(char* fileName)
+{
+	int posNameColumn = 0, posTextColumn = 0, index = 0;
+	char nameHeader[] = "name";
+	char textHeader[] = "text";
+	char line[MAXCHARS];
+	//char delim[1] = ",";
+	FILE* fp = fopen(fileName, "r");	
+
+	// Check position of name and tweet in the csv file
+	fgets(line, MAXCHARS, fp);
+	printf("%s", line);
+        char* token = strtok(line, ",");
+	
+	while(token != NULL)
+	{
+		if (strcmp(nameHeader, token) == 0)
+                        posNameColumn = index;
+                if (strcmp(textHeader, token) == 0)
+                        posTextColumn = index;
+		printf("%s\n", token);
+		printf("%d\n", index);
+		token = strtok(NULL, ",");
+		index += 1;
+	}	
+
+	printf("posNameColumn: %d\n", posNameColumn);
+	printf("posTextColumn: %d\n", posTextColumn);
+}
+
+
 int main(int argc, char* argv[])
 {
 
 	bool fileIsValid = false;
 
-	if (fileOpenCheck(argv[1])) 
+	if (fileCheck(argv[1])) 
 		fileIsValid = true;
 	else 
 		fileIsValid = false;
 
-	if (fileIsValid) 
+	if (fileIsValid)
 	{
-		printf("TODO: do work!\n");
+		readFile(argv[1]); 
 	}
 
 	return 0;
