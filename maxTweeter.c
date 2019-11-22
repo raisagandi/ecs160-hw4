@@ -20,6 +20,13 @@
 #define MAXCHARS (1024)
 #define MAXLENFILE (20000)
 
+typedef struct PersonCountPair
+{
+	char* person;
+	int count;
+} PersonCountPair;
+
+
 /**
  * return true if file is valid
  * return false otherwise
@@ -52,7 +59,8 @@ bool fileCheck(char* fileName)
 void readFile(char* fileName)
 {
 	int posNameColumn = 0, posTextColumn = 0, index = 0;
-	char nameHeader[] = "name";
+	char nameHeaderNoQuotes[] = "name";
+	char nameHeaderWithQuotes[] = "\"name\"";
 	char line[MAXCHARS];
 	FILE* fp = fopen(fileName, "r");	
 
@@ -63,13 +71,14 @@ void readFile(char* fileName)
 	
 	while(token != NULL)
 	{
-		if (strcmp(nameHeader, token) == 0)
+		if (strcmp(nameHeaderNoQuotes, token) == 0 || strcmp(nameHeaderWithQuotes, token) == 0)
                         posNameColumn = index;
 		token = strtok(NULL, ",");
 		index += 1;
 	}	
 
-	// Now, read the tweets	
+	// Create an array of PersonCountPair structs
+	 
 }
 
 
