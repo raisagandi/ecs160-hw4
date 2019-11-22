@@ -20,6 +20,9 @@
 #define MAXCHARS (1024)
 #define MAXLENFILE (20000)
 
+/*
+ * Pair of {Person: Count of tweets}
+ */
 typedef struct PersonCountPair
 {
 	char* person;
@@ -27,9 +30,9 @@ typedef struct PersonCountPair
 } PersonCountPair;
 
 
-/**
- * return true if file is valid
- * return false otherwise
+/*
+ * Returns true if file is valid
+ * false otherwise
  */
 bool fileCheck(char* fileName)
 {
@@ -53,33 +56,99 @@ bool fileCheck(char* fileName)
 	}
 
 	return false;
-}
+} // fileCheck()
 
 
+/*
+ * Returns the position (index) of the name column in the CSV file
+ */
+int getPosNameColumn(FILE *fp)
+{
+	int posNameColumn = 0, indexInLine = 0;
+	char line[MAXCHARS];
+	char nameHeaderNoQuotes[] = "name";
+        char nameHeaderWithQuotes[] = "\"name\"";
+	char* lineCopy = NULL;
+	char* token = NULL;
+
+	fgets(line, MAXCHARS, fp);
+	lineCopy = strdup(line);
+
+	while (token = strsep(&lineCopy, ","))
+	{
+		if(strcmp(nameHeaderNoQuotes, token) == 0 || strcmp(nameHeaderWithQuotes, token) == 0)
+		{
+			posNameColumn = indexInLine;
+			break;
+		}
+		indexInLine += 1;
+	}
+	return posNameColumn;
+} // getPosNameColumn()
+
+
+void fillPersonCountArray(PersonCountPair* personCountArray, FILE* fp, int posNameColumn)
+{
+	int indexInFile = 0, indexInLine = 0;
+	char line[MAXCHARS];
+	char* lineCopy = NULL;
+       	char* token = NULL;
+
+	fgets(line, MAXCHARS, fp); // Ignore first line
+	
+	while (fgets(line, MAXCHARS, fp))
+	{
+		lineCopy = strdup(line);
+
+		while (token = strsep(&lineCopy, ","))
+		{
+			printf("token: %s\n", token);
+		}
+	}
+
+} // fillPersonCountArray()
+
+
+/*
+ * Reads and parses the CSV file
+ * Gathers the {Person: Tweet count}
+ */
 void readFile(char* fileName)
 {
-	int posNameColumn = 0, posTextColumn = 0, index = 0;
-	char nameHeaderNoQuotes[] = "name";
-	char nameHeaderWithQuotes[] = "\"name\"";
+	int posNameColumn = 0;
 	char line[MAXCHARS];
+	char* lineCopy = NULL;
+	char* token = NULL;
 	FILE* fp = fopen(fileName, "r");	
 
-	// Check position of name and tweet in the csv file
-	fgets(line, MAXCHARS, fp);
-	printf("%s", line);
-        char* token = strtok(line, ",");
+	// Get the position of the name column in the CSV file
+	posNameColumn = getPosNameColumn(fp);
 	
-	while(token != NULL)
-	{
-		if (strcmp(nameHeaderNoQuotes, token) == 0 || strcmp(nameHeaderWithQuotes, token) == 0)
-                        posNameColumn = index;
-		token = strtok(NULL, ",");
-		index += 1;
-	}	
+	// Create an array to hold each person-count pair
+	PersonCountPair* personCountArray = (PersonCountPair*)malloc(sizeof(PersonCountPair) * MAXLENFILE);
+	
+	fillPersonCountArray(personCountArray, fp, posNameColumn);
+	
+	// {ben: 1}, {ariana: 1}, {marcy: 1}
 
-	// Create an array of PersonCountPair structs
-	 
-}
+		/*
+		// check if the name has quotes surrounding it
+		if (name[0] == '\"' && name[strlen(name) - 1] == '\"')
+		{
+			// TODO
+			// remove the surrounding quotes
+			//removeSurroundingQuotes(name);
+		}
+		*/
+		// TODO
+		// check if the person's name is in the array
+		// if not, then put it in the next index of the array (provided it's inbounds)
+		// increment the index, check if it's inbounds
+		// and then put the name and set count to 1
+		
+
+		// else, increment the count in the struct
+} // readFile()
 
 
 int main(int argc, char* argv[])
@@ -98,4 +167,4 @@ int main(int argc, char* argv[])
 	}
 
 	return 0;
-}
+} // main()
