@@ -83,29 +83,72 @@ int getPosNameColumn(FILE *fp)
 		}
 		indexInLine += 1;
 	}
+	
 	return posNameColumn;
+
 } // getPosNameColumn()
 
 
+/*
+ * Remove surrounding quotes from name, if any
+ * e.g. "Amy" becomes Amy
+ */
+void removeSurroundingQuotes(char* name)
+{
+	
+	printf("%c\n", name[0]);
+	printf("%c\n", name[strlen(name)-1]);
+	
+	if (name[0] == '\"' && name[strlen(name) - 1] == '\"')
+	{
+		printf("here\n");
+		for(int pos = 0; pos < strlen(name) - 1; pos++)
+		{
+			name[pos] = name[pos+1];
+		}
+
+	}
+	printf("%s\n", name);
+}
+
+/*
+ * Fills an array of {Person : Tweet count} structs
+ */
 void fillPersonCountArray(PersonCountPair* personCountArray, FILE* fp, int posNameColumn)
 {
 	int indexInFile = 0, indexInLine = 0;
 	char line[MAXCHARS];
 	char* lineCopy = NULL;
        	char* token = NULL;
+	char* name = NULL;
 
 	fgets(line, MAXCHARS, fp); // Ignore first line
 	
 	while (fgets(line, MAXCHARS, fp))
 	{
 		lineCopy = strdup(line);
+		indexInLine = 0;
 
 		while (token = strsep(&lineCopy, ","))
 		{
-			printf("token: %s\n", token);
+			if(indexInLine == posNameColumn)
+			{
+				size_t size = strlen(token) + sizeof(char); // Account for null terminator
+				name= (char*) malloc(size);
+				strncpy(name, token, size);
+
+				if(name[0] == '\"' && name[strlen(name)-1] == '\"')
+				{
+					// Remove surrounding quotes		
+				}
+				break;
+			}
+			indexInLine += 1;
 		}
+		indexInFile += 1;
 	}
 
+	free(name);
 } // fillPersonCountArray()
 
 
@@ -128,26 +171,7 @@ void readFile(char* fileName)
 	PersonCountPair* personCountArray = (PersonCountPair*)malloc(sizeof(PersonCountPair) * MAXLENFILE);
 	
 	fillPersonCountArray(personCountArray, fp, posNameColumn);
-	
-	// {ben: 1}, {ariana: 1}, {marcy: 1}
 
-		/*
-		// check if the name has quotes surrounding it
-		if (name[0] == '\"' && name[strlen(name) - 1] == '\"')
-		{
-			// TODO
-			// remove the surrounding quotes
-			//removeSurroundingQuotes(name);
-		}
-		*/
-		// TODO
-		// check if the person's name is in the array
-		// if not, then put it in the next index of the array (provided it's inbounds)
-		// increment the index, check if it's inbounds
-		// and then put the name and set count to 1
-		
-
-		// else, increment the count in the struct
 } // readFile()
 
 
