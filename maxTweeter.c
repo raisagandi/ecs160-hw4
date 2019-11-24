@@ -1,6 +1,6 @@
 /*
- * Calculates top 10 tweeters (by volume of tweets)
- * in a given CSV file of tweets.
+ * Calculates UP TO the top 10 tweeters (by volume of tweets)
+ * in a given CSV file of tweets.i
  * This program takes in one command line argument: the path of the CSV file
  * Output: 10 lines of <tweeter>: <count of tweets>
  * Each output line is in decreasing order of tweets
