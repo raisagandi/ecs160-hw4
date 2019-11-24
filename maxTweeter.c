@@ -95,20 +95,14 @@ int getPosNameColumn(FILE *fp)
  */
 void removeSurroundingQuotes(char* name)
 {
-	
-	printf("%c\n", name[0]);
-	printf("%c\n", name[strlen(name)-1]);
-	
-	if (name[0] == '\"' && name[strlen(name) - 1] == '\"')
-	{
-		printf("here\n");
-		for(int pos = 0; pos < strlen(name) - 1; pos++)
-		{
-			name[pos] = name[pos+1];
-		}
+	int nameLength= strlen(name) - 2; // -2 to remove quotes
+	int newNameLength = nameLength + 1; // +1 because of nullterm
+		
+	char newName[newNameLength];
+	memcpy(newName, &name[1], nameLength);
+	newName[newNameLength - 1] = '\0'; // don't forget this
 
-	}
-	printf("%s\n", name);
+		
 }
 
 /*
@@ -125,23 +119,38 @@ void fillPersonCountArray(PersonCountPair* personCountArray, FILE* fp, int posNa
 
 	fgets(line, MAXCHARS, fp); // Ignore first line
 	
-	while (fgets(line, MAXCHARS, fp))
+	while (fgets(line, MAXCHARS, fp)) // Read each line
 	{
 		lineCopy = strdup(line);
 		indexInLine = 0;
 
-		while (token = strsep(&lineCopy, ","))
+		while (token = strsep(&lineCopy, ",")) // Read each token in the line
 		{
-			if(indexInLine == posNameColumn)
+			if(indexInLine == posNameColumn) // Name of tweeter
 			{
-				size_t size = strlen(token) + sizeof(char); // Account for null terminator
-				name= (char*) malloc(size);
-				strncpy(name, token, size);
+				//size_t size = strlen(token) + sizeof(char); // Account for null terminator
+				//name= (char*) malloc(size);
+				//strncpy(name, token, size);
 
-				if(name[0] == '\"' && name[strlen(name)-1] == '\"')
+				printf("name before: %s\n", token);
+
+				if(token[0] == '\"' && token[strlen(token)-1] == '\"')
 				{
-					// Remove surrounding quotes		
+					int nameLength= strlen(token) - 2; // -2 to remove quotes
+        				int newNameLength = nameLength + 1; // +1 because of nullterm
+					
+					name = (char*) malloc(newNameLength * sizeof(char));
+					memcpy(name, &token[1], nameLength);
+					name[newNameLength] = '\0';
+				} 
+				else
+				{
+					size_t size = strlen(token) + sizeof(char);
+					name = (char*) malloc(size);
+					strncpy(name, token, size);
 				}
+
+				printf("name: %s\n", name);
 				break;
 			}
 			indexInLine += 1;
@@ -172,7 +181,7 @@ void readFile(char* fileName)
 	PersonCountPair* personCountArray = (PersonCountPair*)malloc(sizeof(PersonCountPair) * MAXLENFILE);
 	
 	// TODO
-	// fillPersonCountArray(personCountArray, fp, posNameColumn);
+	fillPersonCountArray(personCountArray, fp, posNameColumn);
 
 } // readFile()
 
