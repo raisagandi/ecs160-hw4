@@ -31,8 +31,11 @@ typedef struct PersonCountPair
 
 
 /*
- * Returns true if file is valid
- * false otherwise
+ * FileCheck: Checks if the file has a valid input format i.e. *.csv
+ * 		Args:
+ * 			 fileName: Name of the file 
+ * 		Returns:
+ * 			 a boolean indication wheter a file is valid or not.
  */
 bool fileCheck(char* fileName)
 {
@@ -41,7 +44,6 @@ bool fileCheck(char* fileName)
 		printf("Invalid Input Format\n");
 		return false;
 	}
-
         // Code modified from:
         // https://stackoverflow.com/questions/10347689/how-can-i-check-whether-a-string-ends-with-csv-in-c
         char *dot = strrchr(fileName, '.');
@@ -54,28 +56,33 @@ bool fileCheck(char* fileName)
                 printf("Invalid Input Format\n"); 
         	return false;
 	}
-
 	return false;
-} // fileCheck()
+} 
 
 
 /*
- * Returns the position (index) of the name column in the CSV file
+ * getPosNameColumn: Returns the position (index) of the name column in the CSV file
+ * 				Args:
+ * 					 fp: file 
+ * 				Returns:
+ * 						index of the column that contains the names				
  */
 int getPosNameColumn(FILE *fp)
 {
 	int posNameColumn = 0, indexInLine = 0;
 	char line[MAXCHARS];
 	char nameHeaderNoQuotes[] = "name";
-        char nameHeaderWithQuotes[] = "\"name\"";
+    char nameHeaderWithQuotes[] = "\"name\"";
 	char* lineCopy = NULL;
 	char* token = NULL;
 
 	fgets(line, MAXCHARS, fp);
 	lineCopy = strdup(line);
-
-	while (token = strsep(&lineCopy, ","))
+	token = strsep(&lineCopy, ",");
+    
+	while ( (token = strsep(&lineCopy, ",")) != NULL)
 	{
+		printf("token is : %s ", token);
 		if(strcmp(nameHeaderNoQuotes, token) == 0 || strcmp(nameHeaderWithQuotes, token) == 0)
 		{
 			posNameColumn = indexInLine;
@@ -86,12 +93,14 @@ int getPosNameColumn(FILE *fp)
 	
 	return posNameColumn;
 
-} // getPosNameColumn()
+} 
 
 
 /*
- * Remove surrounding quotes from name, if any
- * e.g. "Amy" becomes Amy
+ * removeSurroundingQuotes: Remove surrounding quotes from name, if any
+ * 							e.g. "Amy" becomes Amy
+ * 						Args:
+ * 							name: given a name, removes quotes and converts into a consistent format.
  */
 void removeSurroundingQuotes(char* name)
 {
@@ -120,7 +129,7 @@ void fillPersonCountArray(PersonCountPair* personCountArray, FILE* fp, int posNa
 	int indexInFile = 0, indexInLine = 0;
 	char line[MAXCHARS];
 	char* lineCopy = NULL;
-       	char* token = NULL;
+    char* token = NULL;
 	char* name = NULL;
 
 	fgets(line, MAXCHARS, fp); // Ignore first line
@@ -130,7 +139,7 @@ void fillPersonCountArray(PersonCountPair* personCountArray, FILE* fp, int posNa
 		lineCopy = strdup(line);
 		indexInLine = 0;
 
-		while (token = strsep(&lineCopy, ","))
+		while (token == strsep(&lineCopy, ","))
 		{
 			if(indexInLine == posNameColumn)
 			{
@@ -167,7 +176,7 @@ void readFile(char* fileName)
 
 	// Get the position of the name column in the CSV file
 	posNameColumn = getPosNameColumn(fp);
-	
+	printf("You entered: %d \n", posNameColumn);
 	// Create an array to hold each person-count pair
 	PersonCountPair* personCountArray = (PersonCountPair*)malloc(sizeof(PersonCountPair) * MAXLENFILE);
 	
