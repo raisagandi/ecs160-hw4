@@ -1,3 +1,6 @@
+#ifndef DICT_H
+#define DICT_H
+
 typedef struct {
     char *key;
     int value;
@@ -14,3 +17,5 @@ int dict_has(Dictionary *dictionary, const char *key);
 int dict_get(Dictionary *dictionary, const char *key);
 void dict_remove(Dictionary *dictionary, const char *key);
 void dict_free(Dictionary *dictionary);
+
+#endif // DICT_H

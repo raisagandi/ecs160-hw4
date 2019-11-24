@@ -158,9 +158,6 @@ void fillPersonCountArray(PersonCountPair* personCountArray, char* fileName, int
 void readFile(char* fileName)
 {
 	int posNameColumn = 0;
-	char line[MAXCHARS];
-	char* lineCopy = NULL;
-	char* token = NULL;
 	FILE* fp = fopen(fileName, "r");	
 
 	// Get the position of the name column in the CSV file
@@ -189,8 +186,8 @@ int main(int argc, char* argv[])
 	{
 		readFile(argv[1]); 
 	}
-	//Dictionary* dictionary = dict_new();
-	//dict_add(dictionary, "key", 0);
+	Dictionary* dictionary = dict_new();
+	dict_add(dictionary, "key", 0);
 
 	return 0;
 } // main()

@@ -3,3 +3,8 @@ Atharva Chalke
 
 NOTE: we need to submit ONLY one file!
 I'm creating a Makefile just for ease of programming, we'll need to put the dictionary logic in maxTweeter.c
+
+The executable name is "max"
+So to test it, type on the console: "max <csv_file_name>"
+
+Again, we'll remove the makefile and dictionary files later.
