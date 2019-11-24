@@ -93,3 +93,7 @@ void dict_free(Dictionary *dictionary) {
     free(dictionary);
     dict_free(tail);
 }
+
+//void dict_print(Dictionary *dictionary) {
+//    
+//}
