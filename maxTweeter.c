@@ -112,6 +112,7 @@ void removeSurroundingQuotes(char* name)
 }
 
 /*
+ * TODO
  * Fills an array of {Person : Tweet count} structs
  */
 void fillPersonCountArray(PersonCountPair* personCountArray, FILE* fp, int posNameColumn)
@@ -170,7 +171,8 @@ void readFile(char* fileName)
 	// Create an array to hold each person-count pair
 	PersonCountPair* personCountArray = (PersonCountPair*)malloc(sizeof(PersonCountPair) * MAXLENFILE);
 	
-	fillPersonCountArray(personCountArray, fp, posNameColumn);
+	// TODO
+	// fillPersonCountArray(personCountArray, fp, posNameColumn);
 
 } // readFile()
 
