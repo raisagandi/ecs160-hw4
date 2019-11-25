@@ -14,28 +14,25 @@ Dictionary* dict_new() {
 
 void dict_add(Dictionary *dictionary, const char *key, int value) {
     
-    printf("\nIN DICT_ADD\n");
-    printf("%s %d\n", key, value);
-
-    if(dict_has(dictionary, key) == 1) // Remove existing key
+    // Remove existing key
+    if(dict_has(dictionary, key) == 1)
         dict_remove(dictionary, key);
-    
-    if(dictionary != NULL && dictionary->head != NULL) { // Adding a new key after existing head
+
+    // Adding a new key after existing head
+    if(dictionary != NULL && dictionary->head != NULL) { 
         
-        printf("adding a new key after existing head! woohoo!\n");
+        // Find an empty tail
         while(dictionary->tail) {
-	    printf("go to the tail -- tailception lol\n");
 	    dictionary = dictionary->tail;
-            printf("dictionary is now the tail\n");
         } 
-	if(!dictionary->tail) { // tail is null
-	    printf("creating a new tail\n");
+	// Now, create a new tail
+	if(!dictionary->tail) {
 	    dictionary->tail = dict_new();
 	    dictionary = dictionary->tail;
 	}
     }
     
-    printf("about to add new key and value\n");
+    // Adding brand new key and value pair
     int key_length = strlen(key) + 1;
     dictionary->head = (KVPair*)malloc(sizeof(KVPair));
     assert(dictionary->head != NULL);
@@ -43,62 +40,60 @@ void dict_add(Dictionary *dictionary, const char *key, int value) {
     assert(dictionary->head->key != NULL);
     strcpy(dictionary->head->key, key);
     dictionary->head->value = value;
-
-    printf("dict head key: %s, value: %d\n", dictionary->head->key, dictionary->head->value);
 }
 
 int dict_has(Dictionary *dictionary, const char *key) {
     
-    printf("\nIN DICT_HAS\n");
-
     if (dictionary->head == NULL)
         return 0;
 
     while(dictionary) {
-	printf("dict head key: %s\n", dictionary->head->key);
+    
         if(strcmp(dictionary->head->key, key) == 0)
             return 1;
-        //if(!dictionary->tail) {
-        //    printf("tail is NULL\n");
-	//    break;
-        //}	    
-
 	dictionary = dictionary->tail;
-        printf("dictionary tailing....\n\n");
     }
+    
     return 0;
 }
 
 int dict_get(Dictionary *dictionary, const char *key) {
+    
     if (dictionary->head == NULL)
         return 0;
+    
     while(dictionary) {
+    
         if(strcmp(dictionary->head->key, key) == 0)
             return dictionary->head->value;
         dictionary = dictionary->tail;
     }
+
     return 0;
 }
 
-// HAS A BUG! Not deleting properly.
 void dict_remove(Dictionary *dictionary, const char *key) {
+    
     if (dictionary->head == NULL)
         return;
+    // Setting previous dictionary
     Dictionary *previous = NULL; 
+
     while(dictionary != NULL) {
-        if(strcmp(dictionary->head->key, key) == 0) {
-            if(previous == NULL) {
+
+	// Found matching key
+    	if(strcmp(dictionary->head->key, key) == 0) {
+
+    	    if(previous == NULL) {
                 free(dictionary->head->key);
                 dictionary->head->key = NULL;
 		free(dictionary->head);
 		dictionary->head = NULL;
-		printf("dict head key is now null\n");
-                if(!dictionary->tail) {
+                if(!dictionary->tail) // No tail
 	            return;
-		}
 
-                if (dictionary->head == NULL && dictionary->tail != NULL) {
-                    
+		// Setting the new head and tail after deleting the old head
+                if (dictionary->head == NULL && dictionary->tail != NULL) {                
 		    Dictionary *toremove = dictionary->tail;
                     dictionary->head->key = toremove->head->key;
                     dictionary->tail = toremove->tail;
@@ -109,9 +104,11 @@ void dict_remove(Dictionary *dictionary, const char *key) {
 		    return;
                 }
             }
-            else {
+            else { 
+		// Setting the new dictionary's tail to the old tail 
                 previous->tail = dictionary->tail;
             }
+	    // Get rid of the old dictionary
             free(dictionary->head->key);
             free(dictionary->head);
             free(dictionary);
@@ -132,9 +129,10 @@ void dict_free(Dictionary *dictionary) {
     dict_free(tail);
 }
 
+/*
+ * Debugging aid
+ */
 void dict_print(Dictionary *dictionary) {    
-
-    printf("\nin DICT_PRINT\n");
 
     if(!dictionary) {
         printf("Dictionary is empty\n");

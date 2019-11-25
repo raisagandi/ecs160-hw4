@@ -190,6 +190,8 @@ int main(int argc, char* argv[])
     dict_add(dictionary, "key", 0);
     dict_add(dictionary, "key", 4);
     dict_add(dictionary, "secondkey", 5);
+    dict_add(dictionary, "secondkey", 100);
+    dict_add(dictionary, "thirdkey", 1000);
     dict_print(dictionary);
     return 0;
 } // main()
