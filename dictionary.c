@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 Dictionary* dict_new() {
-    printf("Size of dict : %d\n", sizeof(Dictionary) );
+    
     Dictionary *dictionary = (Dictionary*)malloc(sizeof(Dictionary));
     assert(dictionary != NULL);
     dictionary->head = NULL;
@@ -14,26 +14,16 @@ Dictionary* dict_new() {
 }
 
 void dict_add(Dictionary *dictionary, const char *key, int value) {
-    
-    // Remove existing key
-    if(dict_has(dictionary, key) == 1)
-        dict_remove(dictionary, key);
-
-    // Adding a new key after existing head
-    if(dictionary != NULL && dictionary->head != NULL) { 
-        
-        // Find an empty tail
-        while(dictionary->tail) {
-	    dictionary = dictionary->tail;
-        } 
-	// Now, create a new tail
-	if(!dictionary->tail) {
-	    dictionary->tail = dict_new();
-	    dictionary = dictionary->tail;
-	}
+    if(dict_has(dictionary, key))
+            dict_remove(dictionary, key);
+    if (dictionary->head != NULL) {
+        while(dictionary->tail != NULL) {
+            dictionary = dictionary->tail;
+        }
+        Dictionary *next = dict_new();
+        dictionary->tail = next;
+        dictionary = dictionary->tail;
     }
-    
-    // Adding brand new key and value pair
     int key_length = strlen(key) + 1;
     dictionary->head = (KVPair*)malloc(sizeof(KVPair));
     assert(dictionary->head != NULL);

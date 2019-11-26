@@ -73,7 +73,7 @@ int getPosNameColumn(FILE *fp)
     int posNameColumn = 0, indexInLine = 0;
     char line[MAXCHARS];
     char nameHeaderNoQuotes[] = "name";
-        char nameHeaderWithQuotes[] = "\"name\"";
+    char nameHeaderWithQuotes[] = "\"name\"";
     char* lineCopy = NULL;
     char* token = NULL;
 
@@ -192,15 +192,17 @@ int main(int argc, char* argv[])
 
     bool fileIsValid = false;
 
+/*
     if (fileCheck(argv[1])) 
         fileIsValid = true;
     else 
         fileIsValid = false;
 
     if (fileIsValid)
-    {
-        readFile(argv[1]); 
-    }
+    {*/
+       // readFile(argv[1]); 
+       readFile("test.csv");
+   // }
     /*
     Dictionary* dictionary = dict_new();
     dict_add(dictionary, "key", 0);
