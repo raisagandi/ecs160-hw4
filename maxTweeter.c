@@ -133,7 +133,8 @@ int i, j, k;
 int n1 = m - l + 1;
 int n2 = r - m;
 int L[n1], R[n2];
-char* L1[n1], R1[n2];
+char* L1[n1];
+char* R1[n2];
 for (i = 0; i < n1; i++){
     L[i] = arr[l + i];
     L1[i] = name_list[l + i];   
@@ -321,11 +322,21 @@ void fillPersonCountArray( char* fileName, int posNameColumn)
    
    mergeSort(all_count, all_names, 0, (name_count - 1)); 
    DictDestroy(d);
-   
-   for (int i=0; i < name_count-1; i++) {
+   if (name_count<10){
+       for (int i=name_count-1; i >= 0; i--) {
        printf("For %s we have : %d\n", all_names[i], all_count[i]);
 
    }
+
+   }
+   else{
+       for (int i=name_count-1; i >= name_count-10; i--) {
+       printf("For %s we have : %d\n", all_names[i], all_count[i]);
+
+   }
+
+   }
+   
         
    
    
@@ -376,17 +387,17 @@ int main(int argc, char* argv[])
     bool fileIsValid = false;
     fileIsValid = true;
 
-/*
+    /*
     if (fileCheck(argv[1])) 
         fileIsValid = true;
     else 
         fileIsValid = false;
-*/
+    */
     if (fileIsValid)
     {
         
-        //readFile(argv[1]); 
-        readFile("test.csv"); 
+        readFile(argv[1]); 
+        //readFile("test.csv"); 
       
     }
      
