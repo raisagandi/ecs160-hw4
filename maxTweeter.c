@@ -276,8 +276,8 @@ void fillPersonCountArray( char* fileName, int posNameColumn)
                 }
                 const char *cur_count = DictSearch(d, name);
                 int temp;
-                const char *new_count;
-                temp = atoi(cur_count)+1;
+                char* new_count;
+		temp = atoi(cur_count)+1;
                 
                 //get current_count 
                 //const char *cur_count = DictSearch(d, name);
