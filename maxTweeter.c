@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "dictionary.h"
+#include "dict.h"
 
 #define MAXCHARS (1024)
 #define MAXLENFILE (20000)
@@ -30,6 +30,70 @@ typedef struct PersonCountPair
     int count;
 } PersonCountPair;
 
+struct node {
+   char* data;
+   struct node *next;
+};
+
+struct node *head = NULL;
+struct node *current = NULL;
+
+/*
+Simple linked list to store names. Used to find values later on
+*/
+
+
+void insert(char* data1) {
+   struct node *ptr = head;
+   //create a link
+   bool flag = false;
+   while(ptr != NULL) {   
+       
+      if (strcmp(ptr->data, data1 ) == 0)  {
+         
+          return;
+          }
+      ptr = ptr->next;
+   }
+
+   struct node *link = (struct node*) malloc(sizeof(struct node));
+
+   //link->key = key;
+   link->data = data1;
+
+   //point it to old first node
+   link->next = head;
+
+   //point first to new first node
+   head = link;
+}
+
+//display the list
+void printList() {
+
+   struct node *ptr = head;
+
+   printf("\n[head] =>");
+   //start from the beginning
+   while(ptr != NULL) {        
+      printf(" %s =>",ptr->data);
+      ptr = ptr->next;
+   }
+
+   printf(" [null]\n");
+}
+
+/*
+//display the key value pairs
+void printDict(){
+    struct node *ptr = head;
+    while(ptr != NULL) {        
+      printf("For %s we have count: %d \n", ptr->data,DictSearch(d, ptr->data) );
+      ptr = ptr->next;
+   }
+
+}
+*/
 
 /*
  * FileCheck: Checks if the file has a valid input format i.e. *.csv
@@ -110,7 +174,8 @@ void fillPersonCountArray( char* fileName, int posNameColumn)
     
     FILE* fp = fopen(fileName, "r");
     fgets(line, MAXCHARS, fp); 
-    Dictionary* dictionary = dict_new();
+    Dict d = DictCreate();
+    int scoobydoo_c = 0;
     while (fgets(line, MAXCHARS, fp))// Enter line
     {
         
@@ -141,18 +206,23 @@ void fillPersonCountArray( char* fileName, int posNameColumn)
                     strncpy(name, token, size);
                     
                 }
+                const char *cur_count = DictSearch(d, name);
+                int temp;
+                const char *new_count;
+                temp = atoi(cur_count)+1;
                 
-                //Add count to dictionary
-                if (dict_has(dictionary, name)){
-                    int cur_score = dict_get(dictionary,name) + 1;
-                    dict_add( dictionary ,name, cur_score );
-                }
-                else{
-                    dict_add(dictionary, name,1);
-                }
-                //printf("name: %s\n", name);
+                //get current_count 
+                //const char *cur_count = DictSearch(d, name);
+               
+                
+
+                sprintf(new_count, "%d",  temp);
+                DictDelete( d, name);
+                DictInsert(d, name, new_count);
+                insert(name);
+                
                 break;
-                
+                //printf("Name is %s\n", name);
 
             }
             indexInLine += 1;
@@ -160,10 +230,31 @@ void fillPersonCountArray( char* fileName, int posNameColumn)
         
         indexInFile += 1;
     }
-    dict_print(dictionary);
-    
-    
+   
+   //Debugging
+    //printList();
+    struct node *ptr = head;
+    while(ptr != NULL) {        
+      printf("For %s we have count: %d \n", ptr->data,atoi(DictSearch(d, ptr->data) ));
+      ptr = ptr->next;
+   }
+   
     free(name);
+    
+
+/*
+    //Get length of unique counts in dataset
+    struct node *ptr = head;
+    int length = 0; 
+    while(ptr != NULL) {        
+      length += 1;
+      ptr = ptr->next;
+   }
+   //If no elements present then just end the program
+   if (length == 0){
+       return;
+   }
+*/
 } // fillPersonCountArray()
 
 
@@ -187,32 +278,31 @@ void readFile(char* fileName)
 } // readFile()
 
 
+
+
 int main(int argc, char* argv[])
 {
 
     bool fileIsValid = false;
+    fileIsValid = true;
 
 /*
     if (fileCheck(argv[1])) 
         fileIsValid = true;
     else 
         fileIsValid = false;
-
+*/
     if (fileIsValid)
-    {*/
-       // readFile(argv[1]); 
-       readFile("test.csv");
-   // }
-    /*
-    Dictionary* dictionary = dict_new();
-    dict_add(dictionary, "key", 0);
-    dict_add(dictionary, "key", 4);
-    dict_add(dictionary, "secondkey", 5);
-    dict_add(dictionary, "secondkey", 100);
-    dict_add(dictionary, "thirdkey", 1000);
-    int a = dict_get(dictionary, "key");
-    printf("The value is %d\n", a);
+    {
+        
+        //readFile(argv[1]); 
+        readFile("test.csv"); 
+      
+    }
+     
+    
+  
     //dict_print(dictionary);
-    */
+    
     return 0;
 } // main()
