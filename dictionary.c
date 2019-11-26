@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 Dictionary* dict_new() {
+    printf("Size of dict : %d\n", sizeof(Dictionary) );
     Dictionary *dictionary = (Dictionary*)malloc(sizeof(Dictionary));
     assert(dictionary != NULL);
     dictionary->head = NULL;

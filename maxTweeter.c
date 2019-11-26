@@ -90,7 +90,7 @@ int getPosNameColumn(FILE *fp)
         }
         indexInLine += 1;
     }
-    printf("pos name col: %d\n", posNameColumn);    
+    //printf("pos name col: %d\n", posNameColumn);    
     return posNameColumn;
 
 } 
@@ -100,32 +100,35 @@ int getPosNameColumn(FILE *fp)
  * TODO
  * Fills an array of {Person : Tweet count} structs
  */
-void fillPersonCountArray(PersonCountPair* personCountArray, char* fileName, int posNameColumn)
+void fillPersonCountArray( char* fileName, int posNameColumn)
 {
     int indexInFile = 0, indexInLine = 0;
     char line[MAXCHARS];
     char* lineCopy = NULL;
-        char* token = NULL;
+    char* token = NULL;
     char* name = NULL;
-    int lineCount = 0;
+    
     FILE* fp = fopen(fileName, "r");
     fgets(line, MAXCHARS, fp); 
-    
-    while (fgets(line, MAXCHARS, fp))
+    Dictionary* dictionary = dict_new();
+    while (fgets(line, MAXCHARS, fp))// Enter line
     {
-        lineCount += 1;
+        
         lineCopy = strdup(line);
         indexInLine = 0;
 
-        while ( (token = strsep(&lineCopy, ",")) != NULL)
+        while ( (token = strsep(&lineCopy, ",")) != NULL) // enter word within the token
         {
-            if(indexInLine == (posNameColumn+1))
+            
+            if(indexInLine == (posNameColumn+1))        //find the name column
             {
-                if(token[0] == '\"' && token[strlen(token)-1] == '\"')
+                //Extract names 
+                if(token[0] == '\"' && token[strlen(token)-1] == '\"')  
                 {
+                    
                     // Remove quotes
                     int nameLength= strlen(token) - 2; // -2 to remove quotes
-                        int newNameLength = nameLength + 1; // +1 because of nullterm
+                    int newNameLength = nameLength + 1; // +1 because of nullterm
                     
                     name = (char*) malloc(newNameLength * sizeof(char));
                     memcpy(name, &token[1], nameLength);
@@ -136,16 +139,29 @@ void fillPersonCountArray(PersonCountPair* personCountArray, char* fileName, int
                     size_t size = strlen(token) + sizeof(char);
                     name = (char*) malloc(size);
                     strncpy(name, token, size);
+                    
                 }
-
-                printf("name: %s\n", name);
+                
+                //Add count to dictionary
+                if (dict_has(dictionary, name)){
+                    int cur_score = dict_get(dictionary,name) + 1;
+                    dict_add( dictionary ,name, cur_score );
+                }
+                else{
+                    dict_add(dictionary, name,1);
+                }
+                //printf("name: %s\n", name);
                 break;
+                
 
             }
             indexInLine += 1;
         }
+        
         indexInFile += 1;
     }
+    dict_print(dictionary);
+    
     
     free(name);
 } // fillPersonCountArray()
@@ -163,11 +179,10 @@ void readFile(char* fileName)
     // Get the position of the name column in the CSV file
     posNameColumn = getPosNameColumn(fp);
     
-    // Create an array to hold each person-count pair
-    PersonCountPair* personCountArray = (PersonCountPair*)malloc(sizeof(PersonCountPair) * MAXLENFILE);
+    
     
     // TODO
-    fillPersonCountArray(personCountArray, fileName, posNameColumn);
+    fillPersonCountArray(fileName, posNameColumn);
 
 } // readFile()
 
@@ -186,12 +201,16 @@ int main(int argc, char* argv[])
     {
         readFile(argv[1]); 
     }
+    /*
     Dictionary* dictionary = dict_new();
     dict_add(dictionary, "key", 0);
     dict_add(dictionary, "key", 4);
     dict_add(dictionary, "secondkey", 5);
     dict_add(dictionary, "secondkey", 100);
     dict_add(dictionary, "thirdkey", 1000);
-    dict_print(dictionary);
+    int a = dict_get(dictionary, "key");
+    printf("The value is %d\n", a);
+    //dict_print(dictionary);
+    */
     return 0;
 } // main()
