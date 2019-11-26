@@ -22,8 +22,7 @@ struct dict {
 #define MAX_LOAD_FACTOR (1)
 
 /* dictionary initialization code used in both DictCreate and grow */
-Dict
-internalDictCreate(int size)
+Dict internalDictCreate(int size)
 {
     Dict d;
     int i;
@@ -43,14 +42,12 @@ internalDictCreate(int size)
     return d;
 }
 
-Dict
-DictCreate(void)
+Dict DictCreate(void)
 {
     return internalDictCreate(INITIAL_SIZE);
 }
 
-void
-DictDestroy(Dict d)
+void DictDestroy(Dict d)
 {
     int i;
     struct elt *e;
@@ -72,8 +69,7 @@ DictDestroy(Dict d)
 
 #define MULTIPLIER (97)
 
-static unsigned long
-hash_function(const char *s)
+static unsigned long hash_function(const char *s)
 {
     unsigned const char *us;
     unsigned long h;
@@ -87,8 +83,7 @@ hash_function(const char *s)
     return h;
 }
 
-static void
-grow(Dict d)
+static void grow(Dict d)
 {
     Dict d2;            /* new dictionary we'll create */
     struct dict swap;   /* temporary structure for brain transplant */
@@ -118,8 +113,7 @@ grow(Dict d)
 }
 
 /* insert a new key-value pair into an existing dictionary */
-void
-DictInsert(Dict d, const char *key, const char *value)
+void DictInsert(Dict d, const char *key, const char *value)
 {
     struct elt *e;
     unsigned long h;
@@ -149,8 +143,7 @@ DictInsert(Dict d, const char *key, const char *value)
 
 /* return the most recently inserted value associated with a key */
 /* or 0 if no matching key is present */
-const char *
-DictSearch(Dict d, const char *key)
+const char* DictSearch(Dict d, const char *key)
 {
     struct elt *e;
 
@@ -166,8 +159,7 @@ DictSearch(Dict d, const char *key)
 
 /* delete the most recently inserted record with the given key */
 /* if there is no such record, has no effect */
-void
-DictDelete(Dict d, const char *key)
+void DictDelete(Dict d, const char *key)
 {
     struct elt **prev;          /* what to change when elt is deleted */
     struct elt *e;              /* what to delete */
