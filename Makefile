@@ -1,11 +1,11 @@
-max: maxTweeter.o dictionary.o
-	gcc -o max maxTweeter.o dictionary.o
+max: maxTweeter.o dict.o
+	gcc -o max maxTweeter.o dict.o
 
-maxTweeter.o: maxTweeter.c dictionary.h
-	gcc -g -Wall -Werror -c maxTweeter.c
+maxTweeter.o: maxTweeter.c dict.h
+	gcc -g -c maxTweeter.c
 
-dictionary.o: dictionary.c dictionary.h
-	gcc -g -Wall -Werror -c dictionary.c
+dict.o: dict.c dict.h
+	gcc -g -c dict.c
 
 clean:
 	rm -rf max *.o
