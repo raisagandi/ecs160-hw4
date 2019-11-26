@@ -180,15 +180,15 @@ void merge(int arr[], char* name_list[], int l, int m, int r)
     }
 }
 
-void mergeSort(int arr[],char* list_name, int l, int r)
+void mergeSort(int arr[],char* list_name[], int l, int r)
 {
-if (l < r)
-{
-int m = l+(r-l)/2;
-mergeSort(arr, list_name, l, m);
-mergeSort(arr,list_name, m+1, r);
-merge(arr, list_name, l, m, r);
-}
+    if (l < r)
+    {
+        int m = l+(r-l)/2;
+        mergeSort(arr, list_name, l, m);
+        mergeSort(arr,list_name, m+1, r);
+        merge(arr, list_name, l, m, r);
+    }
 }
 
 
