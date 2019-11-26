@@ -15,3 +15,5 @@ Testing TODO:
 3. Check that : if the name header is surrounded by quotes, ALL the tweeter names should be surrounded by quotes.
    If not, file is invalid [ ]
 4. A valid file should NOT have duplicate headers [ ]
+5. If file empty, it's invalid [ ]
+6. If we have a field like this ,", then the file is invalid [ ]
