@@ -91,6 +91,7 @@ bool fileCheck(char* fileName)
         printf("Invalid Input Format\n");
         return false;
     }
+    /* TODO: THIS IS THE PART CAUSING AN ERROR
         // Code modified from:
         // https://stackoverflow.com/questions/10347689/how-can-i-check-whether-a-string-ends-with-csv-in-c
         char *dot = strrchr(fileName, '.');
@@ -103,6 +104,29 @@ bool fileCheck(char* fileName)
                 printf("Invalid Input Format\n"); 
             return false;
     }
+    */
+
+   
+   FILE* fp = fopen(fileName, "r");
+   int row_count = 0;
+   char line[2056];
+   //Check for max char and max lines
+   while (fgets(line, MAXCHARS, fp)){
+       row_count++;
+       if (strlen(line) > MAXCHARS){
+           printf("Too many characters in line");
+           return false;
+       }
+   }
+   if (row_count > MAXLENFILE){
+       printf("Too many lines ");
+       return false;
+   }
+   
+   
+
+   
+
     return false;
 } 
 
@@ -334,13 +358,14 @@ int main(int argc, char* argv[])
 
     bool fileIsValid = false;
     fileIsValid = true;
-
     /*
     if (fileCheck(argv[1])) 
         fileIsValid = true;
     else 
         fileIsValid = false;
     */
+    fileCheck(argv[1]);
+
     if (fileIsValid)
     { 
         readFile(argv[1]); 
