@@ -114,12 +114,12 @@ bool fileCheck(char* fileName)
    while (fgets(line, MAXCHARS, fp)){
        row_count++;
        if (strlen(line) > MAXCHARS){
-           printf("Too many characters in line");
+           printf("Too many characters in line\n");
            return false;
        }
    }
    if (row_count > MAXLENFILE){
-       printf("Too many lines ");
+       printf("Too many lines\n");
        return false;
    }
    
@@ -355,16 +355,15 @@ void readFile(char* fileName)
 
 int main(int argc, char* argv[])
 {
-
     bool fileIsValid = false;
-    fileIsValid = true;
+    //fileIsValid = true;
     /*
     if (fileCheck(argv[1])) 
         fileIsValid = true;
     else 
         fileIsValid = false;
     */
-    fileCheck(argv[1]);
+    fileIsValid = fileCheck(argv[1]);
 
     if (fileIsValid)
     { 
