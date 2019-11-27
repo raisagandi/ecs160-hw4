@@ -17,5 +17,7 @@ Testing TODO (please cross off each item when done):
 4. A valid file should NOT have duplicate headers [ ]
 5. If file empty, it's invalid [ ]
 6. If we have a field like this ,", then the file is invalid [ ]
-7. Valid file should have MAXLENLINE lines [ ] ( Done)
-8. Valid file should have MAXCHARS per line [ ] ( Done)
+7. Valid file should have MAXLENLINE lines [ Done ] 
+8. Valid file should have MAXCHARS per line [ Done ]
+9. Overkill: if one particular column header has quotes, its entire column should have quotes (not just the name field) [ ]
+9. Put everything - logic, dictionary - in maxTweeter.c
