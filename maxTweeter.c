@@ -106,12 +106,14 @@ bool fileCheck(char* fileName)
     }
     */
 
-   
+   int bufferSize = 1000000;
+
    FILE* fp = fopen(fileName, "r");
    int row_count = 0;
-   char line[2056];
+   char line[bufferSize];
+   
    //Check for max char and max lines
-   while (fgets(line, MAXCHARS, fp)){
+   while (fgets(line, bufferSize, fp)){
        row_count++;
        if (strlen(line) > MAXCHARS){
            printf("Too many characters in line\n");
@@ -123,11 +125,7 @@ bool fileCheck(char* fileName)
        return false;
    }
    
-   
-
-   
-
-    return false;
+   return false;
 } 
 
 
