@@ -22,14 +22,7 @@
 #define MAXCHARS (1024)
 #define MAXLENFILE (20000)
 
-/*
- * Pair of {Person: Count of tweets}
- */
-typedef struct PersonCountPair
-{
-    char* person;
-    int count;
-} PersonCountPair;
+
 
 struct node {
    char* data;
@@ -42,8 +35,6 @@ struct node *current = NULL;
 /*
 Simple linked list to store names. Used to find values later on
 */
-
-
 void insert(char* data1) {
    struct node *ptr = head;
    //create a link
@@ -69,7 +60,7 @@ void insert(char* data1) {
    head = link;
 }
 
-//display the list
+//Helper function 
 void printList() {
 
    struct node *ptr = head;
@@ -84,17 +75,7 @@ void printList() {
    printf(" [null]\n");
 }
 
-/*
-//display the key value pairs
-void printDict(){
-    struct node *ptr = head;
-    while(ptr != NULL) {        
-      printf("For %s we have count: %d \n", ptr->data,DictSearch(d, ptr->data) );
-      ptr = ptr->next;
-   }
 
-}
-*/
 
 /*
  * FileCheck: Checks if the file has a valid input format i.e. *.csv
@@ -229,9 +210,11 @@ int getPosNameColumn(FILE *fp)
 
 
 /*
- * TODO
- * Fills an array of {Person : Tweet count} structs
- */
+ *          fillPersonCountArray: Finds count for each user -> sorts that according to count -> prints top 10 values
+ *                          Args:
+ *                              fileName: Name of the csv file 
+ *                              posNameColumn: Column number that contains the name of the tweet
+*/
 void fillPersonCountArray( char* fileName, int posNameColumn)
 {
     int indexInFile = 0, indexInLine = 0;
@@ -243,22 +226,17 @@ void fillPersonCountArray( char* fileName, int posNameColumn)
     FILE* fp = fopen(fileName, "r");
     fgets(line, MAXCHARS, fp); 
     Dict d = DictCreate();
-    int scoobydoo_c = 0;
     while (fgets(line, MAXCHARS, fp))// Enter line
     {
-        
         lineCopy = strdup(line);
         indexInLine = 0;
-
         while ( (token = strsep(&lineCopy, ",")) != NULL) // enter word within the token
         {
-            
             if(indexInLine == (posNameColumn+1))        //find the name column
             {
                 //Extract names 
                 if(token[0] == '\"' && token[strlen(token)-1] == '\"')  
                 {
-                    
                     // Remove quotes
                     int nameLength= strlen(token) - 2; // -2 to remove quotes
                     int newNameLength = nameLength + 1; // +1 because of nullterm
@@ -274,37 +252,25 @@ void fillPersonCountArray( char* fileName, int posNameColumn)
                     strncpy(name, token, size);
                     
                 }
+                // Get count in dictionary, if name isn't there then 0 is returned.
                 const char *cur_count = DictSearch(d, name);
                 int temp;
                 char* new_count;
-		temp = atoi(cur_count)+1;
-                
-                //get current_count 
-                //const char *cur_count = DictSearch(d, name);
-               
-                
-
+                temp = atoi(cur_count)+1; 
                 sprintf(new_count, "%d",  temp);
                 DictDelete( d, name);
                 DictInsert(d, name, new_count);
                 insert(name);
-                
                 break;
-                //printf("Name is %s\n", name);
-
             }
             indexInLine += 1;
         }
-        
         indexInFile += 1;
     }
-   
-   //Debugging
-    //printList();
+    // Get number of names to initialize array
     int name_count = 0;
     struct node *ptr = head;
     while(ptr != NULL) {        
-      //printf("For %s we have count: %d \n", ptr->data,atoi(DictSearch(d, ptr->data) ));
       ptr = ptr->next;
       name_count += 1;
    }
@@ -312,6 +278,7 @@ void fillPersonCountArray( char* fileName, int posNameColumn)
    int all_count[name_count];
    ptr = head;
    int index ;
+   //Fill in array with names and count
    for( index = 0; index < name_count; index = index + 1 ){
        
        all_names[index] = ptr->data;
@@ -320,8 +287,10 @@ void fillPersonCountArray( char* fileName, int posNameColumn)
        //printf("For %s we have count: %d \n", all_names[index],all_count[index]);
    }
    
+   // Run mergeSort to sort the values
    mergeSort(all_count, all_names, 0, (name_count - 1)); 
    DictDestroy(d);
+   //If we have less  than 10 values then print out sorted list for whatever values are available
    if (name_count<10){
        for (int i=name_count-1; i >= 0; i--) {
        printf("For %s we have : %d\n", all_names[i], all_count[i]);
@@ -329,39 +298,22 @@ void fillPersonCountArray( char* fileName, int posNameColumn)
    }
 
    }
+   //Print the top 10 values other wise
    else{
        for (int i=name_count-1; i >= name_count-10; i--) {
        printf("For %s we have : %d\n", all_names[i], all_count[i]);
 
    }
-
-   }
-   
-        
-   
-   
-    //free(name);
-    
-
-/*
-    //Get length of unique counts in dataset
-    struct node *ptr = head;
-    int length = 0; 
-    while(ptr != NULL) {        
-      length += 1;
-      ptr = ptr->next;
-   }
-   //If no elements present then just end the program
-   if (length == 0){
-       return;
-   }
-*/
+   } 
+free(name);
+ 
 } // fillPersonCountArray()
 
 
 /*
- * Reads and parses the CSV file
- * Gathers the {Person: Tweet count}
+ *      readFile: Reads the file and prints out the top 10 values
+ *           Args:
+ *                 - filename: Name of file
  */
 void readFile(char* fileName)
 {
@@ -370,10 +322,6 @@ void readFile(char* fileName)
 
     // Get the position of the name column in the CSV file
     posNameColumn = getPosNameColumn(fp);
-    
-    
-    
-    // TODO
     fillPersonCountArray(fileName, posNameColumn);
 
 } // readFile()
@@ -394,16 +342,8 @@ int main(int argc, char* argv[])
         fileIsValid = false;
     */
     if (fileIsValid)
-    {
-        
+    { 
         readFile(argv[1]); 
-        //readFile("test.csv"); 
-      
     }
-     
-    
-  
-    //dict_print(dictionary);
-    
     return 0;
 } // main()
