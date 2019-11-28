@@ -36,10 +36,10 @@ typedef struct TweeterList
 /*
  * Initialize a new tweeter
  */
-Tweeter* createTweeter()
+Tweeter* createTweeter(char* tweeterName)
 {
     Tweeter* newTweeter = (Tweeter*)malloc(sizeof(Tweeter));
-    newTweeter->name = NULL;
+    newTweeter->name = tweeterName;
     newTweeter->numTweets = 0;
     newTweeter->prev = NULL;
     newTweeter->next = NULL;
@@ -102,10 +102,16 @@ int destroyTweeterList(TweeterList* tweeterList)
  */
 void insertTweeter(TweeterList* tweeterList, char* tweeterName)
 {
+
     // The first tweeter encountered
     if(tweeterList->length == 0)
     {
         // TODO 1: Create new node
+	Tweeter* newTweeter = createTweeter(tweeterName);
+	newTweeter->tweetCount += 1;
+	tweeterList->front = newTweeter;
+	tweeterList->rear = newTweeter;
+        tweeterList->length += 1;
 	return;
     }
     
