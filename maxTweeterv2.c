@@ -56,6 +56,32 @@ TweeterList* createTweeterList()
     newList->rear = NULL;
 } // createTweeterList()
 
+/*
+ * Destructor for tweeter list
+ */
+int destroyTweeterList(TweeterList* tweeterList)
+{
+    if(!tweeterList || tweeterList->length == 0)
+    {
+        exit(1);
+    }
+    
+    // Deallocate the tweeters
+    Tweeter* head = tweeterList->front;
+    do {
+        Tweeter* next = head->next;
+	free(head->name);
+	free(head);
+	head = NULL;
+    } while(next != NULL);
+
+    // Deallocate tweeter list
+    free(tweeterList);
+    tweeterList = NULL;
+    return 0;
+} // destroyTweeterList()
+
+
 /**
  * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
  * | These are method definitions for  |
@@ -207,6 +233,7 @@ void processTweeterData(char* fileName, int posNameColumn)
     FILE* fp = fopen(fileName, "r");
     fgets(line, MAXCHARS, fp);
     // TODO: create a linked list of tweeters
+    TweeterList* tweeterList = createTweeterList();
 
     while (fgets(line, MAXCHARS, fp))
     {
@@ -237,6 +264,7 @@ void processTweeterData(char* fileName, int posNameColumn)
 	       }
 
 	       printf("name: %s\n", name);
+	       // TODO insertTweeter(name);
 	    }
 	    indexInLine += 1;
 	}
