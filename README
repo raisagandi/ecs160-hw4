@@ -20,4 +20,4 @@ Testing TODO (please cross off each item when done):
 7. Valid file should have MAXLENLINE lines [ Done ] 
 8. Valid file should have MAXCHARS per line [ Done ]
 9. Overkill: if one particular column header has quotes, its entire column should have quotes (not just the name field) [ ]
-9. Put everything - logic, dictionary - in maxTweeter.c
+9. Put everything - logic, dictionary - in maxTweeter.c [ Done ]
