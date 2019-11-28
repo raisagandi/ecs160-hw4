@@ -7,6 +7,7 @@
 #define MAXCHARS (1024)
 #define MAXLENFILE (20000)
 
+
 /**
  * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
  * | These are method definitions for  |
@@ -97,6 +98,7 @@ bool fileCheck(char* fileName)
 } // fileCheck()
 
 
+
 /**
  * - - - - - - - - - - - -
  * | PROCESS THE CSV FILE |
@@ -141,15 +143,72 @@ int getPosNameColumn(FILE* fp)
 
 } // getPosNameColumn()
 
+
+/**
+ * Prints (up to) the top ten tweeters & their tweet counts
+ * from a given CSV file
+ */ 
+void processTweeterData(char* fileName, int posNameColumn)
+{
+    int indexInFile = 0, indexInLine = 0;
+    char line[MAXCHARS];
+    char* lineCopy = NULL;
+    char* token = NULL;
+    char* name = NULL;
+
+    FILE* fp = fopen(fileName, "r");
+    fgets(line, MAXCHARS, fp);
+    // TODO: create a linked list of tweeters
+
+    while (fgets(line, MAXCHARS, fp))
+    {
+        lineCopy = strdup(line);
+	indexInLine = 0;
+
+	// Parse tokens with comma as delimiter
+	while( (token = strsep(&lineCopy, ",")) != NULL)
+        {
+	    if(indexInLine == posNameColumn) // Name column
+	    {
+	       if(token[0] == '\"' && token[strlen(token)-1] == '\"')
+	       {
+	            // Remove quotes
+		    int nameLength = strlen(token) - 2; // -2 to remove quotes
+		    int newNameLength = nameLength + 1; // +1 for null termntr
+
+		    // Get the name from in-between the quotes
+		    name = (char*) malloc(newNameLength * sizeof(char));
+		    memcpy(name, &token[1], nameLength); 
+		    name[newNameLength] = '\0';
+	       }
+	       else // No quotes in name
+               {
+	           size_t size = strlen(token) + sizeof(char);
+		   name = (char*) malloc(size);
+		   strncpy(name, token, size);
+	       }
+
+	       printf("name: %s\n", name);
+	    }
+	    indexInLine += 1;
+	}
+        indexInFile += 1;
+    }
+
+} // processTweeterData()
+
+
 void readFile(char* fileName)
 {
     int posNameColumn = 0;
     FILE* fp = fopen(fileName, "r");
 
     posNameColumn = getPosNameColumn(fp);
-    // processTweeterData(fileName, posNameColumn)
+    processTweeterData(fileName, posNameColumn);
 
 } // readFile()
+
+
 
 /**
   *- - - - - - - - - - - - 
