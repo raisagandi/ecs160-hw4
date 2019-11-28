@@ -33,6 +33,28 @@ typedef struct TweeterList
 } TweeterList;
 
 
+/*
+ * Initialize a new tweeter
+ */
+Tweeter* createTweeter()
+{
+    Tweeter* newTweeter = (Tweeter*)malloc(sizeof(Tweeter));
+    newTweeter->name = NULL;
+    newTweeter->numTweets = 0;
+    newTweeter->prev = NULL;
+    newTweeter->next = NULL;
+} // createTweeter()
+
+/*
+ * Initialize an empty list
+ */
+TweeterList* createTweeterList()
+{
+    TweeterList* newList = (TweeterList*)malloc(sizeof(TweeterList));
+    newList->length = 0;
+    newList->front = NULL;
+    newList->rear = NULL;
+} // createTweeterList()
 
 /**
  * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
