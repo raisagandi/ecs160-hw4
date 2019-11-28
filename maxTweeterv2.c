@@ -63,7 +63,6 @@ TweeterList* createTweeterList()
 /*
  * Destructor for tweeter list
  */
-/*
 int destroyTweeterList(TweeterList* tweeterList)
 {
     if(!tweeterList || tweeterList->length == 0)
@@ -73,19 +72,21 @@ int destroyTweeterList(TweeterList* tweeterList)
     
     // Deallocate the tweeters
     Tweeter* head = tweeterList->front;
-    do {
-        Tweeter* next = head->next;
-	free(head->name);
-	free(head);
-	head = NULL;
-    } while(next != NULL);
+    while(head != NULL)
+    {
+        Tweeter* toRemove = head;
+        head = head->next;
 
+	free(toRemove->name);
+	free(toRemove);
+	toRemove = NULL;
+    }
+    
     // Deallocate tweeter list
     free(tweeterList);
     tweeterList = NULL;
     return 0;
 } // destroyTweeterList()
-*/
 
 
 /*
@@ -395,7 +396,8 @@ int getPosNameColumn(FILE* fp)
 	}
 	indexInLine += 1;
     }
-    
+   
+    fclose(fp); 
     return posNameColumn;
 
 } // getPosNameColumn()
@@ -452,9 +454,9 @@ void processTweeterData(char* fileName, int posNameColumn)
         indexInFile += 1;
     }
 
-    // Debugging
-    //printList(tweeterList);
     printTopTenTweeters(tweeterList);
+    destroyTweeterList(tweeterList);
+    fclose(fp);
 } // processTweeterData()
 
 
