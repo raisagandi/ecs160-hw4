@@ -87,11 +87,9 @@ int destroyTweeterList(TweeterList* tweeterList)
 void swapTweeters(TweeterList* tweeterList, Tweeter* current, Tweeter* prior, 
 		  Tweeter* leftNode, Tweeter* rightNode)
 {
-    printf("Setting current's prev and next\n");
     current->next = prior;
     current->prev = leftNode;
 
-    printf("Setting prior's prev and next\n");
     prior->next = rightNode;
     prior->prev = current;
 
@@ -124,44 +122,26 @@ void moveTweeter(TweeterList* tweeterList, Tweeter* current)
     // Current is at front of list, then no need to move
     if(prior == NULL)
     {
-	printf("Current is at front of list\n");
         return;
     }
 
     while(current != NULL && prior != NULL &&
 		    current->tweetCount > prior->tweetCount) 
     {
-        printf("current count: %d, prior count: %d\n", current->tweetCount,
-			prior->tweetCount);
-
         if(prior->prev != NULL) // Setting left node
-	{
-            printf("Setting leftNode to prior->prev\n");
             leftNode = prior->prev;
-	}
 	else
-        {
-	    printf("Setting leftNode to NULL\n");
 	    leftNode = NULL;
-        }
 
         if(current->next != NULL) // Setting right node
-	{
-	    printf("Setting rightNode to current->next\n");
             rightNode = current->next;
-	}
 	else
-        {
-	    printf("Setting rightNode to NULL\n");
 	    rightNode = NULL;
-        }
 
-        printf("About to swap current and prior tweeters\n");
         // Swapping current and prior tweeters
         swapTweeters(tweeterList, current, prior, leftNode, rightNode);	
 
         prior = current->prev; // Reset prior
-	printf("After resetting prior\n");
     }
 
 } // swapTweeter()
@@ -205,7 +185,6 @@ void insertTweeter(TweeterList* tweeterList, char* tweeterName)
 	{
             foundTweeter = true;
 	    current->tweetCount += 1;
-	    // TODO 3: Move tweeter to correct position 
             moveTweeter(tweeterList, current);
 	    return;
 	}	
