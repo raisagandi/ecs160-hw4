@@ -72,14 +72,16 @@ int destroyTweeterList(TweeterList* tweeterList)
     
     // Deallocate the tweeters
     Tweeter* head = tweeterList->front;
-    while(head != NULL)
+    Tweeter* ptr = head;
+    for( ; ptr != NULL; ptr = head)
     {
-        Tweeter* toRemove = head;
-        head = head->next;
+        head = ptr->next;
+        printf("name: %s\n", ptr->name);
 
-	free(toRemove->name);
-	free(toRemove);
-	toRemove = NULL;
+	free(ptr->name);
+	printf("freeing name\n");
+	free(ptr);
+	printf("freeing ptr\n");
     }
     
     // Deallocate tweeter list
@@ -297,9 +299,11 @@ bool fileIsNotCSV(char* fileName)
         if(retVal != 0) // Filename did not match our regex
         {
             printf("File is not a CSV file\n");
+            regfree(&regex); // Need to free regex
 	    return true;
 	}
     } 
+    regfree(&regex);
     return false;    
 } // fileIsNotCSV()
 
@@ -396,7 +400,8 @@ int getPosNameColumn(FILE* fp)
 	}
 	indexInLine += 1;
     }
-   
+  
+    free(lineCopy); 
     fclose(fp); 
     return posNameColumn;
 
