@@ -393,12 +393,36 @@ bool fileHasEmptyHeader(char* fileName)
 
 
 /*
- * Return true if file has duplicate headers
+ * TODO 1: Return true if file has duplicate headers
  */
 bool fileHasDuplicateHeaders(char* fileName)
 {
+    // Count how many header tokens
+    
+    // Add items to header array
+    
+    // If we find duplicate header, return
 
 } // fileHasDuplicateHeaders()
+
+/*
+ * In a valid file, a random column should be:
+ * - ALL surrounded by quotes, or have
+ * - NO surrounding quotes
+ * TODO 2: Return true if the above property is not followed
+ */
+bool columnQuotesDontMatch(char* fileName)
+{
+    // Count how many header tokens
+    // Keep an array of bools - T for quotes, else F
+    // For each header token, fill the array
+
+    // Parse the file, line by line
+    // Keeping track of the index in the line
+    // Check if it has quotes, then compare with bool array
+    // If we find a quote mismatch, return true
+
+} // columnQuotesDontMatch()
 
 /*
  * fileCheck: Checks if the file has a valid input format
@@ -415,7 +439,8 @@ bool fileCheck(char* fileName)
         || fileIsNotCSV(fileName) 
         || fileHasTooManyCharsOrLines(fileName) 
 	|| fileHasEmptyHeader(fileName)
-	// || fileHasDuplicateHeaders(fileName)
+	// || TODO 1: fileHasDuplicateHeaders(fileName)
+        // || TODO 2: columnQuotesDontMatch(fileName)
       )
     {
         printf("Invalid Input Format\n");
