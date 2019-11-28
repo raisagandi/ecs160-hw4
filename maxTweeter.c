@@ -288,6 +288,32 @@ bool fileIsNull(char* fileName)
 
 
 /**
+ * Returns true if file is empty
+ */
+bool fileIsEmpty(char* fileName)
+{
+    FILE* fp = fopen(fileName, "r");
+    bool fileEmpty = false;
+
+    if(fp != NULL)
+    {
+        fseek (fp, 0, SEEK_END);
+	long size = ftell(fp);
+	if(size == 0)
+        {
+	    printf("File is empty\n");
+	    fileEmpty = true;
+	}
+    }
+
+    fclose(fp);
+    if(fileEmpty)
+        return true;
+    return false;
+} // fileIsEmpty()
+
+
+/**
  * Returns true if file does not end with *.csv
  */
 bool fileIsNotCSV(char* fileName)
@@ -351,8 +377,10 @@ bool fileHasTooManyCharsOrLines(char* fileName)
  */
 bool fileCheck(char* fileName)
 {
-    if( fileIsNull(fileName) || fileIsNotCSV(fileName) 
-                             || fileHasTooManyCharsOrLines(fileName) )
+    if( fileIsNull(fileName) 
+        || fileIsEmpty(fileName)
+        || fileIsNotCSV(fileName) 
+        || fileHasTooManyCharsOrLines(fileName) )
     {
         printf("Invalid Input Format\n");
 	exit(1);
