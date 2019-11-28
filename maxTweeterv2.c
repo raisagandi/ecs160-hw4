@@ -82,6 +82,55 @@ int destroyTweeterList(TweeterList* tweeterList)
 } // destroyTweeterList()
 
 
+/*
+ * Inserting tweeter
+ *
+ * The doubly linked list is filled in descending order of tweetcount
+ *     from the front. i.e. the front tweter has the most tweets
+ * 
+ * If it's a new tweeter, insert at rear of list
+ * Else, we increment the tweetcount for that tweeter
+ *       and then move it to the correct position in the list
+ *
+ * A small example:
+ *
+ * <front>                   <rear>
+ * - - - - - - -      - - - - - - -
+ * | John      |  --> | Jesslyn   |
+ * | 15 tweets | <--  | 13 tweets |
+ * - - - - - - -      - - - - - - -
+ */
+void insertTweeter(TweeterList* tweeterList, char* tweeterName)
+{
+    // The first tweeter encountered
+    if(tweeterList->length == 0)
+    {
+        // TODO 1: Create new node
+	return;
+    }
+    
+    bool foundTweeter = false;
+    Tweeter* current = tweeterList->front;
+    for( ; current != NULL; current = current->next)
+    {
+        if(strcmp(current->name, tweeterName) == 0) // Found!
+	{
+            foundTweeter = true;
+	    current->tweetCount += 1;
+	    // TODO 3: Move tweeter to correct position 
+	    return;
+	}	
+    }
+
+    if(!foundTweeter) // Tweeter is new to our list
+    {
+     // TODO 2: Insert tweeter at rear
+    }
+   
+} // insertTweeter()
+
+
+
 /**
  * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
  * | These are method definitions for  |
@@ -232,7 +281,6 @@ void processTweeterData(char* fileName, int posNameColumn)
 
     FILE* fp = fopen(fileName, "r");
     fgets(line, MAXCHARS, fp);
-    // TODO: create a linked list of tweeters
     TweeterList* tweeterList = createTweeterList();
 
     while (fgets(line, MAXCHARS, fp))
