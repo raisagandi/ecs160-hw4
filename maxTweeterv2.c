@@ -15,6 +15,7 @@
  * - - - - - - - - - - --
  */
 
+
 /* Tweeter, a linked list node */
 typedef struct Tweeter
 {
@@ -23,6 +24,7 @@ typedef struct Tweeter
     struct Tweeter* prev;
     struct Tweeter* next;
 } Tweeter;
+
 
 /* The linked list */
 typedef struct TweeterList
@@ -45,6 +47,7 @@ Tweeter* createTweeter(char* tweeterName)
     newTweeter->next = NULL;
 } // createTweeter()
 
+
 /*
  * Initialize an empty list
  */
@@ -55,6 +58,7 @@ TweeterList* createTweeterList()
     newList->front = NULL;
     newList->rear = NULL;
 } // createTweeterList()
+
 
 /*
  * Destructor for tweeter list
@@ -82,6 +86,7 @@ int destroyTweeterList(TweeterList* tweeterList)
     return 0;
 } // destroyTweeterList()
 */
+
 
 /*
  * How swapping works:
@@ -218,6 +223,26 @@ void insertTweeter(TweeterList* tweeterList, char* tweeterName)
     }
    
 } // insertTweeter()
+
+
+/*
+ * Print up to the top ten tweeters
+ *    based on their tweet counts
+ * 
+ * Print format:
+ *    <tweeter>: <tweet count>
+ */
+void printTopTenTweeters(TweeterList* tweeterList)
+{
+    Tweeter* current = tweeterList->front;
+    int count = 1;
+
+    for( ; current != NULL && count <= 10; current = current->next)
+    {
+        printf("%s: %d\n", current->name, current->tweetCount);
+    }
+
+} // printTopTenTweeters()
 
 
 /*
@@ -428,8 +453,8 @@ void processTweeterData(char* fileName, int posNameColumn)
     }
 
     // Debugging
-    printList(tweeterList);
-
+    //printList(tweeterList);
+    printTopTenTweeters(tweeterList);
 } // processTweeterData()
 
 
