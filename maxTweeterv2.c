@@ -8,7 +8,7 @@
 #define MAXLENFILE (20000)
 
 /**
- * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+ * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
  * | These are method definitions for  |
  * | ERROR CHECKING FOR FILE VALIDITY  |
  **/ 
@@ -21,7 +21,7 @@ bool fileIsNull(char* fileName)
     if (fileName == NULL)
         return true;
     return false;
-}
+} // fileIsNull()
 
 
 /**
@@ -41,7 +41,7 @@ bool fileIsNotCSV(char* fileName)
 	}
     } 
     return false;    
-}
+} // fileIsNotCSV()
 
 /*
  * Returns true if file has
@@ -74,7 +74,7 @@ bool fileHasTooManyCharsOrLines(char* fileName)
     }
 
     return false;
-}
+} // fileHasTooManyCharsOrLines()
 
 /*
  * fileCheck: Checks if the file has a valid input format
@@ -96,9 +96,30 @@ bool fileCheck(char* fileName)
     return true;
 } // fileCheck()
 
+
+/**
+ * - - - - - - - - - - - -
+ * | PROCESS THE CSV FILE |
+ * | AND TWEETER DATA     |
+ */
+
+void readfile(char* fileName)
+{
+
+} // readFile()
+
+/**
+  *- - - - - - - - - - - - 
+ * | PROGRAM STARTS HERE  |
+ * */
 int main(int argc, char* argv[])
 {
     bool fileIsValid = false;
-
     fileIsValid = fileCheck(argv[1]);
+
+    if (fileIsValid) // File is valid THUS FAR
+    {
+        readFile(argv[1]);
+    }
+
 } // main()
