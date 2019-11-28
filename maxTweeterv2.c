@@ -7,6 +7,32 @@
 #define MAXCHARS (1024)
 #define MAXLENFILE (20000)
 
+/**
+ * - - - - - - - - - - - 
+ * | DOUBLY LINKED LIST |
+ * | DATA STRUCTURE     |
+ * | FOR TWEETER DATA   |
+ * - - - - - - - - - - --
+ */
+
+/* Tweeter, a linked list node */
+typedef struct Tweeter
+{
+    char* name;
+    int numTweets;
+    Tweeter* prev;
+    Tweeter* next;
+} Tweeter;
+
+/* The linked list */
+typedef struct TweeterList
+{
+    int length;
+    Tweeter* front;
+    Tweeter* rear;
+} TweeterList;
+
+
 
 /**
  * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
