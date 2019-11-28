@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <regex.h>
+#include <ctype.h>
 
 #define MAXCHARS (1024)
 #define MAXLENFILE (20000)
@@ -307,9 +308,7 @@ bool fileIsEmpty(char* fileName)
     }
 
     fclose(fp);
-    if(fileEmpty)
-        return true;
-    return false;
+    return fileEmpty;
 } // fileIsEmpty()
 
 
@@ -367,6 +366,40 @@ bool fileHasTooManyCharsOrLines(char* fileName)
     return false;
 } // fileHasTooManyCharsOrLines()
 
+
+/*
+ * Returns true if file has empty header
+ */
+bool fileHasEmptyHeader(char* fileName)
+{
+    FILE* fp = fopen(fileName, "r");
+    bool emptyHeader = true;
+    char line[MAXCHARS];
+
+    fgets(line, MAXCHARS, fp);
+    int len = strlen(line);
+    for(int pos = 0; pos < strlen(line); pos++)
+    {
+        if(isspace(line[pos]))
+	    continue;
+	else
+	    emptyHeader = false;
+    }
+    
+    fclose(fp);
+    return emptyHeader;
+
+} // fileHasEmptyHeader()
+
+
+/*
+ * Return true if file has duplicate headers
+ */
+bool fileHasDuplicateHeaders(char* fileName)
+{
+
+} // fileHasDuplicateHeaders()
+
 /*
  * fileCheck: Checks if the file has a valid input format
  * i.e. *.csv
@@ -380,7 +413,10 @@ bool fileCheck(char* fileName)
     if( fileIsNull(fileName) 
         || fileIsEmpty(fileName)
         || fileIsNotCSV(fileName) 
-        || fileHasTooManyCharsOrLines(fileName) )
+        || fileHasTooManyCharsOrLines(fileName) 
+	|| fileHasEmptyHeader(fileName)
+	// || fileHasDuplicateHeaders(fileName)
+      )
     {
         printf("Invalid Input Format\n");
 	exit(1);
