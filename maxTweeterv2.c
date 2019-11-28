@@ -212,6 +212,7 @@ void insertTweeter(TweeterList* tweeterList, char* tweeterName)
             foundTweeter = true;
 	    current->tweetCount += 1;
             moveTweeter(tweeterList, current);
+	    free(tweeterName); // We already allocated memory for this name
 	    return;
 	}	
     }
@@ -381,12 +382,15 @@ int getPosNameColumn(FILE* fp)
     char line[MAXCHARS];
     char nameHeaderNoQuotes[] = "name";
     char nameHeaderWithQuotes[] = "\"name\"";
-    char* lineCopy = NULL;
     char* token = NULL;
 
     // Read the file, parse by comma as delimiter
     fgets(line, MAXCHARS, fp);
-    lineCopy = strdup(line);
+    char* lineCopy = strdup(line);
+
+    // strsep() will modify lineCopy, we need to save a ptr to it
+    // so we can free it later
+    char* lineCopyPtr = lineCopy;
     token = strsep(&lineCopy, ",");
 
     // Find the name column
@@ -400,8 +404,9 @@ int getPosNameColumn(FILE* fp)
 	}
 	indexInLine += 1;
     }
-  
-    free(lineCopy); 
+ 
+    free(lineCopyPtr); 
+    lineCopyPtr = NULL;
     fclose(fp); 
     return posNameColumn;
 
@@ -417,9 +422,9 @@ void processTweeterData(char* fileName, int posNameColumn)
     int indexInFile = 0, indexInLine = 0;
     char line[MAXCHARS];
     char* lineCopy = NULL;
+    char* lineCopyPtr = NULL;
     char* token = NULL;
     char* name = NULL;
-
     FILE* fp = fopen(fileName, "r");
     fgets(line, MAXCHARS, fp);
     TweeterList* tweeterList = createTweeterList();
@@ -427,6 +432,9 @@ void processTweeterData(char* fileName, int posNameColumn)
     while (fgets(line, MAXCHARS, fp))
     {
         lineCopy = strdup(line);
+	// strsep() will modify lineCopy, need to store ptr to it 
+	// so we can free it later
+	lineCopyPtr = lineCopy;
 	indexInLine = 0;
 
 	// Parse tokens with comma as delimiter
@@ -447,9 +455,10 @@ void processTweeterData(char* fileName, int posNameColumn)
 	       }
 	       else // No quotes in name
                {
-	           size_t size = strlen(token) + sizeof(char);
-		   name = (char*) malloc(size);
+	           int size = strlen(token) + 1;
+		   name = (char*) malloc(sizeof(char) * size);
 		   strncpy(name, token, size);
+		   name[size-1] = '\0';
 	       }
 
 	       insertTweeter(tweeterList, name);
@@ -457,10 +466,12 @@ void processTweeterData(char* fileName, int posNameColumn)
 	    indexInLine += 1;
 	}
         indexInFile += 1;
+	free(lineCopyPtr);
     }
 
     printTopTenTweeters(tweeterList);
     destroyTweeterList(tweeterList);
+    
     fclose(fp);
 } // processTweeterData()
 
