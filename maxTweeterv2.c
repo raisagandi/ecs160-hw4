@@ -83,7 +83,23 @@ int destroyTweeterList(TweeterList* tweeterList)
 } // destroyTweeterList()
 */
 
-
+/*
+ * How swapping works:
+ *
+ * From this,
+ * - - - - - - -      - - - - - - -       - - - - - -       - - - - - -
+ * | leftNode  |  --> | PRIOR     | -->  | CURRENT   | --> | rightNode |
+ * | 20 tweets | <--  | 13 tweets | <--  | 15 tweets | <-- | 5 tweets  |
+ * - - - - - - -      - - - - - - -       - - - - - -       - - - - - -
+ *
+ * We want this:
+ * - - - - - - -      - - - - - - -       - - - - - -       - - - - - -
+ * | leftNode  |  --> | CURRENT   | -->  | PRIOR     | --> | rightNode |
+ * | 20 tweets | <--  | 15 tweets | <--  | 13 tweets | <-- | 5 tweets  |
+ * - - - - - - -      - - - - - - -       - - - - - -       - - - - - -
+ * 
+ * While keeping in mind that leftNode and rightNode can be NULL
+ */ 
 void swapTweeters(TweeterList* tweeterList, Tweeter* current, Tweeter* prior, 
 		  Tweeter* leftNode, Tweeter* rightNode)
 {
@@ -105,6 +121,7 @@ void swapTweeters(TweeterList* tweeterList, Tweeter* current, Tweeter* prior,
 	tweeterList->rear = prior;
     
 } // swapTweeters()
+
 
 /*
  * Move tweeter to correct position after being incremented
@@ -145,6 +162,7 @@ void moveTweeter(TweeterList* tweeterList, Tweeter* current)
     }
 
 } // swapTweeter()
+
 
 /*
  * Inserting tweeter
