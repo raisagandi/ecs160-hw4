@@ -19,9 +19,9 @@
 typedef struct Tweeter
 {
     char* name;
-    int numTweets;
-    Tweeter* prev;
-    Tweeter* next;
+    int tweetCount;
+    struct Tweeter* prev;
+    struct Tweeter* next;
 } Tweeter;
 
 /* The linked list */
@@ -40,7 +40,7 @@ Tweeter* createTweeter(char* tweeterName)
 {
     Tweeter* newTweeter = (Tweeter*)malloc(sizeof(Tweeter));
     newTweeter->name = tweeterName;
-    newTweeter->numTweets = 0;
+    newTweeter->tweetCount = 1;
     newTweeter->prev = NULL;
     newTweeter->next = NULL;
 } // createTweeter()
@@ -59,6 +59,7 @@ TweeterList* createTweeterList()
 /*
  * Destructor for tweeter list
  */
+/*
 int destroyTweeterList(TweeterList* tweeterList)
 {
     if(!tweeterList || tweeterList->length == 0)
@@ -80,7 +81,7 @@ int destroyTweeterList(TweeterList* tweeterList)
     tweeterList = NULL;
     return 0;
 } // destroyTweeterList()
-
+*/
 
 /*
  * Inserting tweeter
@@ -108,7 +109,6 @@ void insertTweeter(TweeterList* tweeterList, char* tweeterName)
     {
         // TODO 1: Create new node
 	Tweeter* newTweeter = createTweeter(tweeterName);
-	newTweeter->tweetCount += 1;
 	tweeterList->front = newTweeter;
 	tweeterList->rear = newTweeter;
         tweeterList->length += 1;
@@ -130,12 +130,37 @@ void insertTweeter(TweeterList* tweeterList, char* tweeterName)
 
     if(!foundTweeter) // Tweeter is new to our list
     {
-     // TODO 2: Insert tweeter at rear
+        // TODO 2: Insert tweeter at rear
+        Tweeter* newTweeter = createTweeter(tweeterName);
+	tweeterList->rear->next = newTweeter;
+	newTweeter->prev = tweeterList->rear;
+	tweeterList->rear = newTweeter;
+	tweeterList->length += 1;
     }
    
 } // insertTweeter()
 
 
+/*
+ * Debugging print list
+ */
+void printList(TweeterList* list)
+{
+    printf("Printing the list of tweeters...\n");
+
+    if(!list || list->length == 0)
+    {
+        printf("List is empty\n");
+        return;
+    }
+
+    Tweeter* current = list->front;
+    for( ; current != NULL; current = current->next)
+    {
+        printf("Name: %s, tweet count: %d\n", current->name, current->tweetCount);
+    }
+
+} // printList()
 
 /**
  * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
@@ -267,7 +292,6 @@ int getPosNameColumn(FILE* fp)
 	indexInLine += 1;
     }
     
-    printf("pos name column: %d\n", posNameColumn);
     return posNameColumn;
 
 } // getPosNameColumn()
@@ -317,13 +341,15 @@ void processTweeterData(char* fileName, int posNameColumn)
 		   strncpy(name, token, size);
 	       }
 
-	       printf("name: %s\n", name);
-	       // TODO insertTweeter(name);
+	       insertTweeter(tweeterList, name);
 	    }
 	    indexInLine += 1;
 	}
         indexInFile += 1;
     }
+
+    // Debugging
+    printList(tweeterList);
 
 } // processTweeterData()
 
