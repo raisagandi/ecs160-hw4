@@ -103,8 +103,51 @@ bool fileCheck(char* fileName)
  * | AND TWEETER DATA     |
  */
 
-void readfile(char* fileName)
+/*
+ * Returns the position of the name column
+ * name header can be either the strings:
+ * 1. name
+ * 2. "name"
+ */
+int getPosNameColumn(FILE* fp)
 {
+    int posNameColumn = 0;
+    int indexInLine = 1; // Indexing starts at 1
+    char line[MAXCHARS];
+    char nameHeaderNoQuotes[] = "name";
+    char nameHeaderWithQuotes[] = "\"name\"";
+    char* lineCopy = NULL;
+    char* token = NULL;
+
+    // Read the file, parse by comma as delimiter
+    fgets(line, MAXCHARS, fp);
+    lineCopy = strdup(line);
+    token = strsep(&lineCopy, ",");
+
+    // Find the name column
+    while ((token = strsep(&lineCopy, ",")) != NULL)
+    {
+        if(strcmp(nameHeaderNoQuotes, token) == 0 ||
+	   strcmp(nameHeaderWithQuotes, token) == 0)
+        {
+            posNameColumn = indexInLine;
+            break;	    
+	}
+	indexInLine += 1;
+    }
+    
+    printf("pos name column: %d\n", posNameColumn);
+    return posNameColumn;
+
+} // getPosNameColumn()
+
+void readFile(char* fileName)
+{
+    int posNameColumn = 0;
+    FILE* fp = fopen(fileName, "r");
+
+    posNameColumn = getPosNameColumn(fp);
+    // processTweeterData(fileName, posNameColumn)
 
 } // readFile()
 
