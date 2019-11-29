@@ -10,9 +10,9 @@ Testing TODO (please cross off each item when done):
 6. Check for empty header [ Done ]
 7. Put everything - logic, dictionary - in maxTweeter.c [ Done ]
 
-8. A valid file should NOT have duplicate headers [ ]
-9. If header does not contain "name" or name, it is invalid [ ]
-10. If header is surrounded by only one quote, it's invalid [ ] 
+8. A valid file should NOT have duplicate headers [ Done ]
+9. If header does not contain "name" or name, it is invalid [ Done ]
+10. If header is surrounded by only one quote, it's invalid [ Done ] 
 11. If text (not header) is surrounded by only one quote, it's invalid [ ]
 12. If one particular column header is surrounded by quotes, 
     its entire column should be surrounded by quotes [ ]
