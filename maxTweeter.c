@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <regex.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #define MAXCHARS (1024)
 #define MAXLENFILE (20000)
@@ -271,6 +272,17 @@ void printList(TweeterList* list)
  * | These are method definitions for  |
  * | ERROR CHECKING FOR FILE VALIDITY  |
  **/ 
+
+
+/**
+ * Returns true if file doesn't exist
+ */
+bool fileNotExist(char* fileName)
+{
+    if(access(fileName, F_OK) != -1)
+         return false; // File exists
+    return true;
+} // fileNotExist()
 
 /**
  * Returns true if filename is null
@@ -614,7 +626,8 @@ bool columnQuotesDontMatch(char* fileName)
  */
 bool fileCheck(char* fileName)
 {
-    if( fileIsNull(fileName) 
+    if( fileNotExist(fileName)
+        || fileIsNull(fileName) 
         || fileIsEmpty(fileName)
         || fileIsNotCSV(fileName) 
         || fileHasTooManyCharsOrLines(fileName)
