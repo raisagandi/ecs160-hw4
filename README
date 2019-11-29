@@ -10,12 +10,17 @@ Testing TODO (please cross off each item when done):
 6. Check for empty header [ Done ]
 7. Put everything - logic, dictionary - in maxTweeter.c [ Done ]
 
+HEADERS
 8. A valid file should NOT have duplicate headers [ Done ]
 9. If header does not contain "name" or name, it is invalid [ Done ]
 10. If header is surrounded by only one quote, it's invalid [ Done ] 
+
+TEXT(NOT HEADERS)
 11. If text (not header) is surrounded by only one quote, it's invalid [ ]
 12. If one particular column header is surrounded by quotes, 
     its entire column should be surrounded by quotes [ ]
 13. And the other way around (no quote header -> no quotes column) [ ]
 14. If the number of text field doesn't match the number of headers, invalid [ ]
+
+FILE FORMAT
 15. A file like this "blah.csv.csv" is invalid [ ]

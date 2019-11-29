@@ -67,9 +67,7 @@ TweeterList* createTweeterList()
 int destroyTweeterList(TweeterList* tweeterList)
 {
     if(!tweeterList || tweeterList->length == 0)
-    {
         exit(1);
-    }
     
     // Deallocate the tweeters
     Tweeter* head = tweeterList->front;
@@ -77,12 +75,9 @@ int destroyTweeterList(TweeterList* tweeterList)
     for( ; ptr != NULL; ptr = head)
     {
         head = ptr->next;
-        printf("name: %s\n", ptr->name);
 
 	free(ptr->name);
-	printf("freeing name\n");
 	free(ptr);
-	printf("freeing ptr\n");
     }
     
     // Deallocate tweeter list
@@ -457,10 +452,27 @@ HeaderList* createHeaderList()
 /*
  * TODO: Destructor header list
  */
-void destroyHeaderList(HeaderList* headerList)
+int destroyHeaderList(HeaderList* headerList)
 {
+    if(!headerList || headerList->length == 0)
+        exit(1);
     
-}
+    // Deallocate the headernames
+    HeaderToken* head = headerList->front;
+    HeaderToken* ptr = head;
+    for( ; ptr != NULL; ptr = head)
+    {
+        head = ptr->next;
+
+	free(ptr->headername);
+	free(ptr);
+    }
+    
+    // Deallocate header list
+    free(headerList);
+    headerList = NULL;
+    return 0;   
+} // destroyHeaderList()
 
 bool checkSingleOuterQuote(char* token)
 {
@@ -470,61 +482,55 @@ bool checkSingleOuterQuote(char* token)
     if( (token[0] == '\"' && token[strlen(token)-1] != '\"') ||
         (token[0] != '\"' && token[strlen(token)-1] == '\"') )
     {
-	printf("has single outer quote\n");
+	printf("Has single outer quote\n");
         hasSingleOuterQuote = true;
     }
     
     return hasSingleOuterQuote;
-}
+} // checkSingleOuterQuote()
 
+
+bool checkDuplicateTokens(HeaderList* headerList, char* token)
+{
+    bool hasDuplicateTokens = false;
+
+    for(HeaderToken* ptr = headerList->front; ptr != NULL; ptr = ptr->next)
+    {
+        if(strcmp(token, ptr->headername) == 0)
+        {
+            printf("Has duplicate headers\n");
+            hasDuplicateTokens = true;
+            break;
+        }
+    }
+    return hasDuplicateTokens;
+} // checkDuplicateTokens()
 
 /*
- * TODO:
  * Fills a linked list of header tokens
  * Returns false if header is invalid
  */
 bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
 {
     char* token = NULL;
-    bool hasNameToken = false, hasDuplicateTokens = false,
-	                       hasSingleOuterQuote = false;
-    
+    bool hasNameToken = false, hasDuplicateTokens = false, hasSingleOuterQuote = false;
+
     while ((token = strsep(&header, ",")) != NULL)
     {
-	// Remove newline from token
+	// Remove newline from token - strtok replaces newline with \0
+	// https://stackoverflow.com/questions/2693776/removing-trailing-newline-character-from-fgets-input
 	if(token[strlen(token)-1] == '\n')
-        {
-            // strtok replaces the newline with a null terminator
-	    // https://stackoverflow.com/questions/2693776/removing-trailing-newline-character-from-fgets-input
 	    strtok(token, "\n");
-	}
 	
-	printf("\n\ntoken before: %s\n\n", token);
 	// Check for name token
         if(strcmp(token, "name") == 0 || strcmp(token, "\"name\"") == 0)
             hasNameToken = true;
 
-        printf("check single outer quote\n\n");	
-	// Check single outer quote
+	// Check single outer quote and duplicate tokens
         hasSingleOuterQuote = checkSingleOuterQuote(token); 	
-        if(hasSingleOuterQuote)
-	    break;
-
-	printf("checking for duplicate tokens\n\n");
-	// Check for duplicate tokens
-        for(HeaderToken* ptr = headerList->front; ptr != NULL; ptr = ptr->next)
-        {
+	hasDuplicateTokens = checkDuplicateTokens(headerList, token);
 	
-	    printf("token: %s\n", token);
-	    printf("headerlist: %s\n", ptr->headername);
-            if(strcmp(token, ptr->headername) == 0)
-            {
-		printf("Has duplicate headers\n");
-                hasDuplicateTokens = true;
-		break;
-            }
-        }
-	if(hasDuplicateTokens)
+	if(hasDuplicateTokens || hasSingleOuterQuote)
             break;
 
 	HeaderToken* newToken = createHeaderToken(token);
@@ -533,21 +539,17 @@ bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
 	    headerList->front = newToken;
 	    headerList->current = newToken;
             headerList->length += 1;
-        }
-        else // Add node to existing list
-	{
-            headerList->current->next = newToken;
-	    headerList->current = newToken;
-	    headerList->length += 1;
+            continue;
 	}
+        // Add node to existing list
+        headerList->current->next = newToken;
+	headerList->current = newToken;
+	headerList->length += 1;
     }
-
     if(!hasNameToken)
 	printf("No name token\n");
-
     if(!hasNameToken || hasDuplicateTokens || hasSingleOuterQuote)
         return false;
-
 } // checkHeaderValidity()
 
 /*
@@ -557,7 +559,6 @@ bool invalidFileContents(char* fileName)
 {
     FILE* fp = fopen(fileName, "r");
     char line[MAXCHARS];
-
     fgets(line, MAXCHARS, fp);
 
     if(fileHasEmptyHeader(line))
@@ -573,7 +574,6 @@ bool invalidFileContents(char* fileName)
     lineCopy = strdup(line);
 
     HeaderList* headerList = createHeaderList();
-    printf("checking header validity\n");
     bool headerValid = checkHeaderValidity(headerList, lineCopy, headerTokenCount);
 
     if(!headerValid)
@@ -611,7 +611,6 @@ bool columnQuotesDontMatch(char* fileName)
 
 /*
  * fileCheck: Checks if the file has a valid input format
- * i.e. *.csv
  * Args:
  *   - fileName: Name of the file
  * Returns:
@@ -623,13 +622,7 @@ bool fileCheck(char* fileName)
         || fileIsEmpty(fileName)
         || fileIsNotCSV(fileName) 
         || fileHasTooManyCharsOrLines(fileName)
-        || invalidFileContents(fileName)	
-	//|| fileHasEmptyHeader(fileName)
-	// || invalidHeader(fileName)
-	// || invalidTextColumn(fileName)
-	// || TODO 1: fileHasDuplicateHeaders(fileName)
-        // || TODO 2: columnQuotesDontMatch(fileName)
-      )
+        || invalidFileContents(fileName) )
     {
         printf("Invalid Input Format\n");
 	exit(1);
@@ -775,8 +768,6 @@ int main(int argc, char* argv[])
     fileIsValid = fileCheck(argv[1]);
 
     if (fileIsValid) // File is valid THUS FAR
-    {
         readFile(argv[1]);
-    }
 
 } // main()
