@@ -17,3 +17,4 @@ Testing TODO (please cross off each item when done):
 12. If one particular column header is surrounded by quotes, 
     its entire column should be surrounded by quotes [ ]
 13. And the other way around (no quote header -> no quotes column) [ ]
+14. If the number of text field doesn't match the number of headers, invalid [ ]

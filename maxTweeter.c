@@ -242,7 +242,7 @@ void printTopTenTweeters(TweeterList* tweeterList)
     Tweeter* current = tweeterList->front;
     int count = 1;
 
-    for( ; current != NULL && count <= 10; current = current->next)
+    for( ; current != NULL && count <= 10; current = current->next, count++)
     {
         printf("%s: %d\n", current->name, current->tweetCount);
     }
@@ -370,40 +370,72 @@ bool fileHasTooManyCharsOrLines(char* fileName)
 /*
  * Returns true if file has empty header
  */
-bool fileHasEmptyHeader(char* fileName)
+bool fileHasEmptyHeader(char* header)
 {
-    FILE* fp = fopen(fileName, "r");
     bool emptyHeader = true;
-    char line[MAXCHARS];
-
-    fgets(line, MAXCHARS, fp);
-    int len = strlen(line);
-    for(int pos = 0; pos < strlen(line); pos++)
+   
+    for(int pos = 0; pos < strlen(header); pos++)
     {
-        if(isspace(line[pos]))
+        if(isspace(header[pos]))
 	    continue;
 	else
 	    emptyHeader = false;
     }
     
-    fclose(fp);
     return emptyHeader;
 
 } // fileHasEmptyHeader()
 
 
 /*
+ * Returns true if there is no name or "name" in header
+ */
+bool noNameInHeader(char* header)
+{
+    bool noNameInHeader = true;
+
+    for(int pos = 0; pos < strlen(header); pos++)
+    {
+
+    }
+
+    return noNameInHeader;
+
+} // noNameInHeader()
+
+
+/*
  * TODO 1: Return true if file has duplicate headers
  */
-bool fileHasDuplicateHeaders(char* fileName)
+bool invalidFileContents(char* fileName)
 {
-    // Count how many header tokens
-    
+    FILE* fp = fopen(fileName, "r");
+    //bool invalidHeader = false;
+    char line[MAXCHARS];
+
+    fgets(line, MAXCHARS, fp);
+
+    if(fileHasEmptyHeader(line))
+        return true;
+
+    if(noNameInHeader(line))
+	return true;
+
+    // Reopen the file
+    fclose(fp);
+    fp = fopen(fileName, "r");
+    fgets(line, MAXCHARS, fp);
+
     // Add items to header array
     
-    // If we find duplicate header, return
-
-} // fileHasDuplicateHeaders()
+    // if(fileHasDuplicateHeaders)
+    //     return true;
+    // if(headerHasOneSurroundQuote)
+    //     return true;
+    //
+    // Create a bool for headers - quote or no quote
+    //     
+} // invalidHeader()
 
 /*
  * In a valid file, a random column should be:
@@ -438,7 +470,9 @@ bool fileCheck(char* fileName)
         || fileIsEmpty(fileName)
         || fileIsNotCSV(fileName) 
         || fileHasTooManyCharsOrLines(fileName) 
-	|| fileHasEmptyHeader(fileName)
+	//|| fileHasEmptyHeader(fileName)
+	// || invalidHeader(fileName)
+	// || invalidTextColumn(fileName)
 	// || TODO 1: fileHasDuplicateHeaders(fileName)
         // || TODO 2: columnQuotesDontMatch(fileName)
       )
