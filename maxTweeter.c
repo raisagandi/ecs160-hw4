@@ -394,10 +394,6 @@ bool noNameInHeader(char* header)
 {
     bool noNameInHeader = true;
 
-    for(int pos = 0; pos < strlen(header); pos++)
-    {
-
-    }
 
     return noNameInHeader;
 
@@ -405,36 +401,193 @@ bool noNameInHeader(char* header)
 
 
 /*
+ * Counts the number of tokens in the header
+ */
+int countHeaderTokens(char* header)
+{
+    int tokenCount = 0;
+    char* token = NULL;
+
+    while ((token = strsep(&header, ",")) != NULL)
+        tokenCount += 1;
+    
+    return tokenCount;
+} // countHeaderTokens()
+
+
+/** And yet another linked list **/
+/* Header token, node in linked list */
+typedef struct HeaderToken
+{
+    char* headername;
+    struct HeaderToken* next;
+} HeaderToken;
+
+
+/* Linked list of headers */
+typedef struct HeaderList
+{
+    int length;
+    HeaderToken* front;
+    HeaderToken* current;
+} HeaderList;
+
+
+/*
+ * Create header token
+ */
+HeaderToken* createHeaderToken(char* token)
+{
+    HeaderToken* newToken = (HeaderToken*)malloc(sizeof(HeaderToken));
+    newToken->headername = strdup(token);
+    newToken->next = NULL;
+} // createHeaderToken()
+
+/*
+ * Create header list
+ */
+HeaderList* createHeaderList()
+{
+    HeaderList* headerList = (HeaderList*)malloc(sizeof(HeaderList));
+    headerList->length = 0;
+    headerList->front = NULL;
+    headerList->current = NULL;
+}
+
+/*
+ * TODO: Destructor header list
+ */
+void destroyHeaderList(HeaderList* headerList)
+{
+    
+}
+
+bool checkSingleOuterQuote(char* token)
+{
+    bool hasSingleOuterQuote = false;
+
+    // Surrounding quote only at beginning or end of string
+    if( (token[0] == '\"' && token[strlen(token)-1] != '\"') ||
+        (token[0] != '\"' && token[strlen(token)-1] == '\"') )
+    {
+	printf("has single outer quote\n");
+        hasSingleOuterQuote = true;
+    }
+    
+    return hasSingleOuterQuote;
+}
+
+
+/*
+ * TODO:
+ * Fills a linked list of header tokens
+ * Returns false if header is invalid
+ */
+bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
+{
+    char* token = NULL;
+    bool hasNameToken = false, hasDuplicateTokens = false,
+	                       hasSingleOuterQuote = false;
+    
+    while ((token = strsep(&header, ",")) != NULL)
+    {
+	// Remove newline from token
+	if(token[strlen(token)-1] == '\n')
+        {
+            // strtok replaces the newline with a null terminator
+	    // https://stackoverflow.com/questions/2693776/removing-trailing-newline-character-from-fgets-input
+	    strtok(token, "\n");
+	}
+	
+	printf("\n\ntoken before: %s\n\n", token);
+	// Check for name token
+        if(strcmp(token, "name") == 0 || strcmp(token, "\"name\"") == 0)
+            hasNameToken = true;
+
+        printf("check single outer quote\n\n");	
+	// Check single outer quote
+        hasSingleOuterQuote = checkSingleOuterQuote(token); 	
+        if(hasSingleOuterQuote)
+	    break;
+
+	printf("checking for duplicate tokens\n\n");
+	// Check for duplicate tokens
+        for(HeaderToken* ptr = headerList->front; ptr != NULL; ptr = ptr->next)
+        {
+	
+	    printf("token: %s\n", token);
+	    printf("headerlist: %s\n", ptr->headername);
+            if(strcmp(token, ptr->headername) == 0)
+            {
+		printf("Has duplicate headers\n");
+                hasDuplicateTokens = true;
+		break;
+            }
+        }
+	if(hasDuplicateTokens)
+            break;
+
+	HeaderToken* newToken = createHeaderToken(token);
+        if(headerList->length == 0) // Empty list
+        {
+	    headerList->front = newToken;
+	    headerList->current = newToken;
+            headerList->length += 1;
+        }
+        else // Add node to existing list
+	{
+            headerList->current->next = newToken;
+	    headerList->current = newToken;
+	    headerList->length += 1;
+	}
+    }
+
+    if(!hasNameToken)
+	printf("No name token\n");
+
+    if(!hasNameToken || hasDuplicateTokens || hasSingleOuterQuote)
+        return false;
+
+} // checkHeaderValidity()
+
+/*
  * TODO 1: Return true if file has duplicate headers
  */
 bool invalidFileContents(char* fileName)
 {
     FILE* fp = fopen(fileName, "r");
-    //bool invalidHeader = false;
     char line[MAXCHARS];
 
     fgets(line, MAXCHARS, fp);
 
     if(fileHasEmptyHeader(line))
+    {
+	fclose(fp);
         return true;
+    }
 
-    if(noNameInHeader(line))
+    char* lineCopy = strdup(line);
+    char* lineCopyPtr = lineCopy;    
+
+    int headerTokenCount = countHeaderTokens(lineCopy);
+    lineCopy = strdup(line);
+
+    HeaderList* headerList = createHeaderList();
+    printf("checking header validity\n");
+    bool headerValid = checkHeaderValidity(headerList, lineCopy, headerTokenCount);
+
+    if(!headerValid)
+    {
+        destroyHeaderList(headerList);
+	free(lineCopyPtr);
+	fclose(fp);
 	return true;
+    }
 
-    // Reopen the file
-    fclose(fp);
-    fp = fopen(fileName, "r");
-    fgets(line, MAXCHARS, fp);
+    // TODO: Create a bool for headers - quote or no quote
+    // 
 
-    // Add items to header array
-    
-    // if(fileHasDuplicateHeaders)
-    //     return true;
-    // if(headerHasOneSurroundQuote)
-    //     return true;
-    //
-    // Create a bool for headers - quote or no quote
-    //     
+    return false;    
 } // invalidHeader()
 
 /*
@@ -469,7 +622,8 @@ bool fileCheck(char* fileName)
     if( fileIsNull(fileName) 
         || fileIsEmpty(fileName)
         || fileIsNotCSV(fileName) 
-        || fileHasTooManyCharsOrLines(fileName) 
+        || fileHasTooManyCharsOrLines(fileName)
+        || invalidFileContents(fileName)	
 	//|| fileHasEmptyHeader(fileName)
 	// || invalidHeader(fileName)
 	// || invalidTextColumn(fileName)
