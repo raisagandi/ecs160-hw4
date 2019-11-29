@@ -472,6 +472,15 @@ int destroyHeaderList(HeaderList* headerList)
 /* --- END OF HEADER LINKED LIST --- */
 
 
+/* Returns true if token is only one quote */
+bool checkOnlyQuote(char* token)
+{
+    if(strlen(token) == 1 && token[0] == '\"')
+        return true;
+   
+    return false;
+} // checkOnlyQuote
+
 /* Returns true if a token has a single outer quote */
 bool checkSingleOuterQuote(char* token)
 {
@@ -517,7 +526,8 @@ bool checkDuplicateTokens(HeaderList* headerList, char* token)
 bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
 {
     char* token = NULL;
-    bool hasNameToken = false, hasDuplicateTokens = false, hasSingleOuterQuote = false;
+    bool hasNameToken = false, hasDuplicateTokens = false;
+    bool onlyQuote = false, hasSingleOuterQuote = false;
 
     while ((token = strsep(&header, ",")) != NULL)
     {
@@ -530,11 +540,14 @@ bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
         if(strcmp(token, "name") == 0 || strcmp(token, "\"name\"") == 0)
             hasNameToken = true;
 
-	// Check single outer quote and duplicate tokens
-        hasSingleOuterQuote = checkSingleOuterQuote(token); 	
+	// Check if header only contains one quote
+	onlyQuote = checkOnlyQuote(token);
+	// Check single outer quote 
+        hasSingleOuterQuote = checkSingleOuterQuote(token); 
+        // Check duplicate tokens	
 	hasDuplicateTokens = checkDuplicateTokens(headerList, token);
 	
-	if(hasDuplicateTokens || hasSingleOuterQuote)
+	if(onlyQuote || hasDuplicateTokens || hasSingleOuterQuote)
             break;
 
 	HeaderToken* newToken = createHeaderToken(token);
@@ -552,7 +565,7 @@ bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
     }
     if(!hasNameToken)
 	printf("No name token\n");
-    if(!hasNameToken || hasDuplicateTokens || hasSingleOuterQuote)
+    if(onlyQuote || !hasNameToken || hasDuplicateTokens || hasSingleOuterQuote)
         return false;
 
     return true; // Valid header
