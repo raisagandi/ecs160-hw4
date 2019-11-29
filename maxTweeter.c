@@ -383,19 +383,6 @@ bool fileHasEmptyHeader(char* header)
 
 
 /*
- * Returns true if there is no name or "name" in header
- */
-bool noNameInHeader(char* header)
-{
-    bool noNameInHeader = true;
-
-
-    return noNameInHeader;
-
-} // noNameInHeader()
-
-
-/*
  * Counts the number of tokens in the header
  */
 int countHeaderTokens(char* header)
@@ -410,7 +397,9 @@ int countHeaderTokens(char* header)
 } // countHeaderTokens()
 
 
-/** And yet another linked list **/
+
+/** --- LINKED LIST OF HEADER TOKENS --- **/
+
 /* Header token, node in linked list */
 typedef struct HeaderToken
 {
@@ -419,7 +408,7 @@ typedef struct HeaderToken
 } HeaderToken;
 
 
-/* Linked list of headers */
+/* Linked list of header names */
 typedef struct HeaderList
 {
     int length;
@@ -428,9 +417,7 @@ typedef struct HeaderList
 } HeaderList;
 
 
-/*
- * Create header token
- */
+/* Create header token */
 HeaderToken* createHeaderToken(char* token)
 {
     HeaderToken* newToken = (HeaderToken*)malloc(sizeof(HeaderToken));
@@ -438,20 +425,17 @@ HeaderToken* createHeaderToken(char* token)
     newToken->next = NULL;
 } // createHeaderToken()
 
-/*
- * Create header list
- */
+
+/* Create header list */
 HeaderList* createHeaderList()
 {
     HeaderList* headerList = (HeaderList*)malloc(sizeof(HeaderList));
     headerList->length = 0;
     headerList->front = NULL;
     headerList->current = NULL;
-}
+} // createHeaderList()
 
-/*
- * TODO: Destructor header list
- */
+/* Destructor header list */
 int destroyHeaderList(HeaderList* headerList)
 {
     if(!headerList || headerList->length == 0)
@@ -463,7 +447,6 @@ int destroyHeaderList(HeaderList* headerList)
     for( ; ptr != NULL; ptr = head)
     {
         head = ptr->next;
-
 	free(ptr->headername);
 	free(ptr);
     }
@@ -474,6 +457,10 @@ int destroyHeaderList(HeaderList* headerList)
     return 0;   
 } // destroyHeaderList()
 
+/* --- END OF HEADER LINKED LIST --- */
+
+
+/* Returns true if a token has a single outer quote */
 bool checkSingleOuterQuote(char* token)
 {
     bool hasSingleOuterQuote = false;
@@ -490,6 +477,8 @@ bool checkSingleOuterQuote(char* token)
 } // checkSingleOuterQuote()
 
 
+/* Returns true if the linked list of headers
+ * contains duplicate tokens */
 bool checkDuplicateTokens(HeaderList* headerList, char* token)
 {
     bool hasDuplicateTokens = false;
@@ -508,7 +497,10 @@ bool checkDuplicateTokens(HeaderList* headerList, char* token)
 
 /*
  * Fills a linked list of header tokens
- * Returns false if header is invalid
+ * Returns false if header is invalid:
+ * 1) has duplicate tokens
+ * 2) has only one surrounding quote on the token (e.g. blah")
+ * 3) has no name token in the header
  */
 bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
 {
@@ -550,10 +542,14 @@ bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
 	printf("No name token\n");
     if(!hasNameToken || hasDuplicateTokens || hasSingleOuterQuote)
         return false;
+
+    return true; // Valid header
 } // checkHeaderValidity()
 
 /*
- * TODO 1: Return true if file has duplicate headers
+ * TODO Return true if 
+ * 1) file has an invalid header
+ * 2) file has an invalid text (below the header)
  */
 bool invalidFileContents(char* fileName)
 {
