@@ -1,5 +1,36 @@
 Raisa Gandi Putri
 Atharva Chalke
+----------------------------------------------------------------------------
+
+File structure:
+> maxTweeter.c
+> /in
+> /out
+
+We need the directories /in and /out for running AFL on our program
+./in contains the test csv files that I created
+
+Some of the CSV files (with too many lines) are not in /in because
+   AFL cannot handle files that are too large
+
+------------------------------------------------------------------------------
+
+RUNNING AFL
+
+# launching the AFL Docker container
+docker run --security-opt seccomp=unconfined --name=afl-container -it caseycas/afl-docker
+
+# put our files(or directory) in the root of the afl-container
+docker cp ecs160-hw4 afl-container :/
+
+# compile our code
+cd ecs160-hw4
+afl-clang -g -o maxTweeter maxTweeter.c
+
+# and then run AFL
+afl-fuzz -i in -o out —- ./maxTweeter @@
+
+------------------------------------------------------------------------------
 
 Testing TODO (please cross off each item when done):
 1. If file is invalid, exit(0) [ Done ]
@@ -29,4 +60,7 @@ FILE FORMAT
 18. A nonexistent file is invalid [ Done ]
 
 AFL
-19. Run AFL for at least 15 minutes [ in progress ]
+19. Run AFL for at least 15 minutes [ Done ]
+
+PENDING Piazza answer
+20. Still waiting to know if empty line (after header) is considered valid/invalid [ ] 
