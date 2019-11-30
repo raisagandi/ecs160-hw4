@@ -606,7 +606,7 @@ bool invalidFileContents(char* fileName)
     }
 
     // TODO: Create a bool for headers - quote or no quote
-    // 
+    
 
     return false;    
 } // invalidHeader()
