@@ -21,7 +21,7 @@ RUNNING AFL
 docker run --security-opt seccomp=unconfined --name=afl-container -it caseycas/afl-docker
 
 # put our files(or directory) in the root of the afl-container
-docker cp ecs160-hw4 afl-container :/
+docker cp ecs160-hw4 afl-container:/
 
 # compile our code
 cd ecs160-hw4
