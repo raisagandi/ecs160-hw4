@@ -1,3 +1,9 @@
+/*
+ * Authors:
+ * Raisa Gandi Putri
+ * Atharva Chalke
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,9 +43,7 @@ typedef struct TweeterList
 } TweeterList;
 
 
-/*
- * Initialize a new tweeter
- */
+/* Initialize a new tweeter */
 Tweeter* createTweeter(char* tweeterName)
 {
     Tweeter* newTweeter = (Tweeter*)malloc(sizeof(Tweeter));
@@ -51,9 +55,7 @@ Tweeter* createTweeter(char* tweeterName)
 } // createTweeter()
 
 
-/*
- * Initialize an empty list
- */
+/* Initialize an empty list */
 TweeterList* createTweeterList()
 {
     TweeterList* newList = (TweeterList*)malloc(sizeof(TweeterList));
@@ -64,9 +66,7 @@ TweeterList* createTweeterList()
 } // createTweeterList()
 
 
-/*
- * Destructor for tweeter list
- */
+/* Destructor for tweeter list */
 int destroyTweeterList(TweeterList* tweeterList)
 {
     if(!tweeterList || tweeterList->length == 0)
@@ -168,7 +168,7 @@ void moveTweeter(TweeterList* tweeterList, Tweeter* current)
         prior = current->prev; // Reset prior
     }
 
-} // swapTweeter()
+} // moveTweeter()
 
 
 /*
@@ -366,9 +366,7 @@ bool fileHasTooManyCharsOrLines(char* fileName)
 } // fileHasTooManyCharsOrLines()
 
 
-/*
- * Returns true if file has empty header
- */
+/* Returns true if file has empty header */
 bool fileHasEmptyHeader(char* header)
 {
     bool emptyHeader = true;
@@ -386,9 +384,7 @@ bool fileHasEmptyHeader(char* header)
 } // fileHasEmptyHeader()
 
 
-/*
- * Counts the number of tokens in the header
- */
+/* Counts the number of tokens in the header */
 int countHeaderTokens(char* header)
 {
     int tokenCount = 0;
@@ -475,6 +471,7 @@ bool checkOnlyQuote(char* token)
     return false;
 } // checkOnlyQuote
 
+
 /* Returns true if a token has a single outer quote */
 bool checkSingleOuterQuote(char* token)
 {
@@ -507,6 +504,7 @@ bool checkDuplicateTokens(HeaderList* headerList, char* token)
     }
     return hasDuplicateTokens;
 } // checkDuplicateTokens()
+
 
 /*
  * Fills a linked list of header tokens
@@ -654,21 +652,25 @@ bool checkColumnValidity(FILE* fp, bool* headerBoolArr, int headerTokenCount)
         } // Text has fewer columns than header
     } // Go through each line of the text
 
-    if(numTokensNotEqualHeader || tokenIsQuote || onlyOneSurroundingQuote || textAndHeaderNotMatch)
+    free(lineCopyPtr);
+
+    if(numTokensNotEqualHeader || tokenIsQuote 
+		    || onlyOneSurroundingQuote || textAndHeaderNotMatch)
     {
-        free(lineCopy);
 	return false;
     }
     return true; // Text below header is formatted OK
 } // checkColumnValidity()
 
 
+/* Destroys header linked list and frees the space for the line */
 void cleanUp(HeaderList* headerList, char* lineCopyPtr, FILE* fp)
 {
     destroyHeaderList(headerList);
     free(lineCopyPtr);
     fclose(fp);
-}
+} // cleanUp()
+
 
 /*
  * Return true if 
@@ -707,12 +709,11 @@ bool invalidFileContents(char* fileName)
     bool* headerBoolArr = (bool*)malloc(sizeof(bool) * headerTokenCount);
     fillBoolArr(headerBoolArr, headerList);
     bool isColumnValid = checkColumnValidity(fp, headerBoolArr, headerTokenCount);
-    
+   
+    cleanUp(headerList, lineCopyPtr, fp);
+
     if(!isColumnValid)
-    {
-	cleanUp(headerList, lineCopyPtr, fp);
 	return true;
-    }
     
     return false; // Header is valid    
 } // invalidHeader()
