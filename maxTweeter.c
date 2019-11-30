@@ -571,6 +571,41 @@ bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
     return true; // Valid header
 } // checkHeaderValidity()
 
+
+/*
+ * Fill array of booleans for each header token
+ * T if header token surrounded by quotes
+ * F otherwise
+ */
+void fillBoolArr(bool* boolArr, HeaderList* headerList)
+{
+    int pos = 0;
+    HeaderToken* token = headerList->front;
+    for( ; token != NULL; token = token->next, pos++)
+    {
+	char* headername = token->headername;
+        if(headername[0] == '\"' 
+	       && headername[strlen(headername)-1] == '\"')
+	    boolArr[pos] = true;
+	else
+	    boolArr[pos] = false;
+    }
+}
+
+
+bool checkColumnValidity(FILE* fp, bool* boolArr)
+{
+    char line[MAXCHARS];
+    // Check lines below the header
+    while(fgets(line, MAXCHARS, fp) != NULL)
+    {
+        
+    }
+
+    return true; // default
+
+}
+
 /*
  * TODO Return true if 
  * 1) file has an invalid header
@@ -605,9 +640,14 @@ bool invalidFileContents(char* fileName)
 	return true;
     }
 
-    // TODO: Create a bool for headers - quote or no quote
-    
+    // Create an array of bool for headers - T if surrounded by quotes
+    bool* boolArr = (bool*)malloc(sizeof(bool) * headerTokenCount);
+    fillBoolArr(boolArr, headerList);
 
+    // TODO: Check if text is valid per column
+    checkColumnValidity(fp, boolArr);
+
+    // TODO: clean up - free the header list
     return false;    
 } // invalidHeader()
 
