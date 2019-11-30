@@ -17,12 +17,12 @@ HEADERS
 11. If header is literally " , it is invalid [ Done ]
 
 TEXT(NOT HEADERS)
-12. If text (not header) is surrounded by only one quote, it's invalid [ ]
+12. If text (not header) is surrounded by only one quote, it's invalid [ Done ]
 13. If one particular column header is surrounded by quotes, 
-    its entire column should be surrounded by quotes [ ]
-14. And the other way around (no quote header -> no quotes column) [ ]
-15. If the number of text field doesn't match the number of headers, invalid [ ]
-16. If text is literally " , it is invalid [ ]
+    its entire column should be surrounded by quotes [ Done ]
+14. And the other way around (no quote header -> no quotes column) [ Done ]
+15. If the number of text field doesn't match the number of headers, invalid [ Done ]
+16. If text is literally " , it is invalid [ Done ]
 
 FILE FORMAT
 17. A file like this "blah.csv.csv" is invalid [ ]

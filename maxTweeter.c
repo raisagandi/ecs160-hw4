@@ -593,15 +593,75 @@ void fillBoolArr(bool* boolArr, HeaderList* headerList)
 }
 
 
-bool checkColumnValidity(FILE* fp, bool* boolArr)
+/* TODO */
+bool checkColumnValidity(FILE* fp, bool* boolArr, int headerTokenCount)
 {
+    printf("here\n");
     char line[MAXCHARS];
+
+    // printing bool array
+    for(int i = 0; i < headerTokenCount; i++)
+	    printf("bool at %d is %d\n", i, boolArr[i]);
+
     // Check lines below the header
     while(fgets(line, MAXCHARS, fp) != NULL)
     {
-        
+	char* lineCopy = strdup(line);
+	char* lineCopyPtr = lineCopy;
+        char* token;
+	int pos = 0;
+	
+	while((token = strsep(&lineCopy, ",")) != NULL)            
+        {
+	    printf("hi\n");
+	    // Number of tokens in text > num tokens in header
+            if(pos == headerTokenCount)
+	    {
+		printf("Too many columns\n");
+  	        return false;
+            }
+
+	    // Check only one quote
+	    if(checkOnlyQuote(token))
+	    {
+		printf("Token is only a quote\n");
+	    	return false;
+            }
+	    // Check if token is the literal "
+	    if(checkSingleOuterQuote(token))
+	    {
+		printf("Single outer quote\n");
+	        return false;
+	    }
+	    
+	    // Compare with boolArr
+	    
+	    bool hasQuotes = false;
+	    if(token[0] == '\"' && token[strlen(token-1)] == '\"')
+	        hasQuotes = true;
+	    printf("bool arr: %d, hasquote: %d\n", boolArr[pos], hasQuotes);
+	    if((hasQuotes == 1 && boolArr[pos] == 1) || 
+			    (hasQuotes == 0 && boolArr[pos] == 0))
+            {
+		printf("here\n");
+                pos += 1;		    
+		continue;
+	    }
+            else
+	    {
+		printf("bools don't match\n");
+		return false;
+            }
+
+	}
+	if(pos < headerTokenCount - 1)
+	{
+	    printf("Too few columns\n");
+	    return false;
+	}
     }
 
+    printf("text column is valid\n");
     return true; // default
 
 }
@@ -645,30 +705,15 @@ bool invalidFileContents(char* fileName)
     fillBoolArr(boolArr, headerList);
 
     // TODO: Check if text is valid per column
-    checkColumnValidity(fp, boolArr);
+    printf("checking column validity\n");
+    bool isColumnValid = checkColumnValidity(fp, boolArr, headerTokenCount);
 
+    if(!isColumnValid)
+	return true;
     // TODO: clean up - free the header list
     return false;    
 } // invalidHeader()
 
-/*
- * In a valid file, a random column should be:
- * - ALL surrounded by quotes, or have
- * - NO surrounding quotes
- * TODO 2: Return true if the above property is not followed
- */
-bool columnQuotesDontMatch(char* fileName)
-{
-    // Count how many header tokens
-    // Keep an array of bools - T for quotes, else F
-    // For each header token, fill the array
-
-    // Parse the file, line by line
-    // Keeping track of the index in the line
-    // Check if it has quotes, then compare with bool array
-    // If we find a quote mismatch, return true
-
-} // columnQuotesDontMatch()
 
 /*
  * fileCheck: Checks if the file has a valid input format
