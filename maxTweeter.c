@@ -50,6 +50,7 @@ Tweeter* createTweeter(char* tweeterName)
     newTweeter->tweetCount = 1;
     newTweeter->prev = NULL;
     newTweeter->next = NULL;
+    return newTweeter;
 } // createTweeter()
 
 
@@ -62,6 +63,7 @@ TweeterList* createTweeterList()
     newList->length = 0;
     newList->front = NULL;
     newList->rear = NULL;
+    return newList;
 } // createTweeterList()
 
 
@@ -428,6 +430,7 @@ HeaderToken* createHeaderToken(char* token)
     HeaderToken* newToken = (HeaderToken*)malloc(sizeof(HeaderToken));
     newToken->headername = strdup(token);
     newToken->next = NULL;
+    return newToken;
 } // createHeaderToken()
 
 
@@ -438,6 +441,7 @@ HeaderList* createHeaderList()
     headerList->length = 0;
     headerList->front = NULL;
     headerList->current = NULL;
+    return headerList;
 } // createHeaderList()
 
 /* Destructor header list */
@@ -499,8 +503,10 @@ bool checkDuplicateTokens(HeaderList* headerList, char* token)
     for(HeaderToken* ptr = headerList->front; ptr != NULL; ptr = ptr->next)
     {
         if(strcmp(token, ptr->headername) == 0)
-            hasDuplicateTokens = true;
+	{
+	    hasDuplicateTokens = true;
             break;
+	}
     }
     return hasDuplicateTokens;
 } // checkDuplicateTokens()
@@ -595,29 +601,38 @@ void fillBoolArr(bool* headerBoolArr, HeaderList* headerList)
 bool checkColumnValidity(FILE* fp, bool* headerBoolArr, int headerTokenCount)
 {
     char line[MAXCHARS];
+    bool numTokensNotEqualHeader = false, tokenIsQuote = false,
+             onlyOneSurroundingQuote = false, textAndHeaderNotMatch = false;
+    char* lineCopy = NULL;
+    char *lineCopyPtr = NULL;
 
     while(fgets(line, MAXCHARS, fp) != NULL)
     {
-	char* lineCopy = strdup(line);
-	char* lineCopyPtr = lineCopy;
-        char* token;
+	lineCopy = strdup(line);
+	lineCopyPtr = lineCopy;
+        char* token = NULL;
 	int pos = 0;
 	
 	while((token = strsep(&lineCopy, ",")) != NULL)            
         {
-	    // Number of tokens in text > num tokens in header
             if(pos == headerTokenCount)
-		return false;
-	    
-	    // Check if token is the literal "
+            {
+		numTokensNotEqualHeader = true;
+		break;
+	    } // Number of tokens in text > num tokens in header
+
 	    if(checkOnlyQuote(token))
-	    	return false;
-	    
-	    // Check if text has only 1 surrounding quote
+	    {
+		tokenIsQuote = true;
+	    	break;
+	    } // Check if token is the literal "
+
 	    if(checkSingleOuterQuote(token))
-	        return false;
-	    
-	    // Compare text with the header; quotes or no quotes
+	    {
+		onlyOneSurroundingQuote = true;
+		break;
+            } // Check if text has only 1 surrounding quote	    
+
 	    bool hasQuotes = false;
 	    if(token[0] == '\"' && token[strlen(token-1)] == '\"')
 	        hasQuotes = true;
@@ -627,16 +642,26 @@ bool checkColumnValidity(FILE* fp, bool* headerBoolArr, int headerTokenCount)
             {
                 pos += 1;		    
 		continue;
-	    }
-            else // The text and header don't match (surrounding quotes)
-		return false;
-	    
-	} // Parse each line
+	    } // Text and header match (surrounding quotes)
+            else
+	    {
+	        textAndHeaderNotMatch = true;
+		break;
+	    } // The text and header don't match (surrounding quotes) 
+	} 
 
-	if(pos != headerTokenCount) // Text has fewer columns than header
-	    return false;
-    } // Check text below header
+	if(pos != headerTokenCount)
+	{
+	    numTokensNotEqualHeader = true;
+	    break;
+        } // Text has fewer columns than header
+    } // Go through each line of the text
 
+    if(numTokensNotEqualHeader || tokenIsQuote || onlyOneSurroundingQuote || textAndHeaderNotMatch)
+    {
+        free(lineCopy);
+	return false;
+    }
     return true; // Text below header is formatted OK
 } // checkColumnValidity()
 
@@ -713,7 +738,7 @@ bool fileCheck(char* fileName)
         || invalidFileContents(fileName) )
     {
         printf("Invalid Input Format\n");
-	exit(1);
+	exit(0);
     }
 
     return true;
