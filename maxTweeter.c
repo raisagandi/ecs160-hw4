@@ -311,10 +311,7 @@ bool fileIsEmpty(char* fileName)
         fseek (fp, 0, SEEK_END);
 	long size = ftell(fp);
 	if(size == 0)
-        {
-	    printf("File is empty\n");
 	    fileEmpty = true;
-	}
     }
 
     fclose(fp);
@@ -334,7 +331,6 @@ bool fileIsNotCSV(char* fileName)
         retVal = regexec(&regex, fileName, 0, NULL, 0);
         if(retVal != 0) // Filename did not match our regex
         {
-            printf("File is not a CSV file\n");
             regfree(&regex); // Need to free regex
 	    return true;
 	}
@@ -360,18 +356,12 @@ bool fileHasTooManyCharsOrLines(char* fileName)
     {
         rowCount += 1;
         if (strlen(line) > MAXCHARS)
-        {
-            printf("Too many characters in a line\n");
             return true;
-	}
     }
 
     // Check if we exceed the max num of lines in file
     if(rowCount > MAXLENFILE)
-    {
-        printf("Too many lines\n");
 	return true;
-    }
 
     return false;
 } // fileHasTooManyCharsOrLines()
@@ -493,7 +483,6 @@ bool checkSingleOuterQuote(char* token)
     if( (token[0] == '\"' && token[strlen(token)-1] != '\"') ||
         (token[0] != '\"' && token[strlen(token)-1] == '\"') )
     {
-	printf("Has single outer quote\n");
         hasSingleOuterQuote = true;
     }
     
@@ -510,11 +499,8 @@ bool checkDuplicateTokens(HeaderList* headerList, char* token)
     for(HeaderToken* ptr = headerList->front; ptr != NULL; ptr = ptr->next)
     {
         if(strcmp(token, ptr->headername) == 0)
-        {
-            printf("Has duplicate headers\n");
             hasDuplicateTokens = true;
             break;
-        }
     }
     return hasDuplicateTokens;
 } // checkDuplicateTokens()
@@ -566,8 +552,7 @@ bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
 	headerList->current = newToken;
 	headerList->length += 1;
     }
-    if(!hasNameToken)
-	printf("No name token\n");
+    
     if(onlyQuote || !hasNameToken || hasDuplicateTokens || hasSingleOuterQuote)
         return false;
 
@@ -580,7 +565,7 @@ bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
  * T if header token surrounded by quotes
  * F otherwise
  */
-void fillBoolArr(bool* boolArr, HeaderList* headerList)
+void fillBoolArr(bool* headerBoolArr, HeaderList* headerList)
 {
     int pos = 0;
     HeaderToken* token = headerList->front;
@@ -589,24 +574,28 @@ void fillBoolArr(bool* boolArr, HeaderList* headerList)
 	char* headername = token->headername;
         if(headername[0] == '\"' 
 	       && headername[strlen(headername)-1] == '\"')
-	    boolArr[pos] = true;
+	    headerBoolArr[pos] = true;
 	else
-	    boolArr[pos] = false;
+	    headerBoolArr[pos] = false;
     }
-}
+} // fillBoolArr()
 
 
-/* TODO */
-bool checkColumnValidity(FILE* fp, bool* boolArr, int headerTokenCount)
+/* 
+ * Check if text below header is valid
+ *  - text (per line) has the same number of fields as the header
+ * A column is valid if:
+ * - it has the same format as the header (either surrounded by quotes or no quotes)
+ * 
+ * Args:
+ *   fp = file
+ *   headerBoolArr = for each header token, T if surrounded by quotes, else F
+ *   headerTokenCount = number of header tokens
+ */
+bool checkColumnValidity(FILE* fp, bool* headerBoolArr, int headerTokenCount)
 {
-    printf("here\n");
     char line[MAXCHARS];
 
-    // printing bool array
-    for(int i = 0; i < headerTokenCount; i++)
-	    printf("bool at %d is %d\n", i, boolArr[i]);
-
-    // Check lines below the header
     while(fgets(line, MAXCHARS, fp) != NULL)
     {
 	char* lineCopy = strdup(line);
@@ -616,58 +605,40 @@ bool checkColumnValidity(FILE* fp, bool* boolArr, int headerTokenCount)
 	
 	while((token = strsep(&lineCopy, ",")) != NULL)            
         {
-	    printf("hi\n");
 	    // Number of tokens in text > num tokens in header
             if(pos == headerTokenCount)
-	    {
-		printf("Too many columns\n");
-  	        return false;
-            }
-
-	    // Check only one quote
-	    if(checkOnlyQuote(token))
-	    {
-		printf("Token is only a quote\n");
-	    	return false;
-            }
+		return false;
+	    
 	    // Check if token is the literal "
+	    if(checkOnlyQuote(token))
+	    	return false;
+	    
+	    // Check if text has only 1 surrounding quote
 	    if(checkSingleOuterQuote(token))
-	    {
-		printf("Single outer quote\n");
 	        return false;
-	    }
 	    
-	    // Compare with boolArr
-	    
+	    // Compare text with the header; quotes or no quotes
 	    bool hasQuotes = false;
 	    if(token[0] == '\"' && token[strlen(token-1)] == '\"')
 	        hasQuotes = true;
-	    printf("bool arr: %d, hasquote: %d\n", boolArr[pos], hasQuotes);
-	    if((hasQuotes == 1 && boolArr[pos] == 1) || 
-			    (hasQuotes == 0 && boolArr[pos] == 0))
+
+	    if((hasQuotes == 1 && headerBoolArr[pos] == 1) || 
+	        (hasQuotes == 0 && headerBoolArr[pos] == 0))
             {
-		printf("here\n");
                 pos += 1;		    
 		continue;
 	    }
-            else
-	    {
-		printf("bools don't match\n");
+            else // The text and header don't match (surrounding quotes)
 		return false;
-            }
+	    
+	} // Parse each line
 
-	}
-	if(pos < headerTokenCount - 1)
-	{
-	    printf("Too few columns\n");
+	if(pos != headerTokenCount) // Text has fewer columns than header
 	    return false;
-	}
-    }
+    } // Check text below header
 
-    printf("text column is valid\n");
-    return true; // default
-
-}
+    return true; // Text below header is formatted OK
+} // checkColumnValidity()
 
 /*
  * TODO Return true if 
@@ -688,7 +659,6 @@ bool invalidFileContents(char* fileName)
 
     char* lineCopy = strdup(line);
     char* lineCopyPtr = lineCopy;    
-
     int headerTokenCount = countHeaderTokens(lineCopy);
     lineCopy = strdup(line);
 
@@ -704,17 +674,15 @@ bool invalidFileContents(char* fileName)
     }
 
     // Create an array of bool for headers - T if surrounded by quotes
-    bool* boolArr = (bool*)malloc(sizeof(bool) * headerTokenCount);
-    fillBoolArr(boolArr, headerList);
-
-    // TODO: Check if text is valid per column
-    printf("checking column validity\n");
-    bool isColumnValid = checkColumnValidity(fp, boolArr, headerTokenCount);
-
+    bool* headerBoolArr = (bool*)malloc(sizeof(bool) * headerTokenCount);
+    fillBoolArr(headerBoolArr, headerList);
+    bool isColumnValid = checkColumnValidity(fp, headerBoolArr, headerTokenCount);
+    
     if(!isColumnValid)
 	return true;
     // TODO: clean up - free the header list
-    return false;    
+    
+    return false; // Header is valid    
 } // invalidHeader()
 
 

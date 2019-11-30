@@ -25,5 +25,5 @@ TEXT(NOT HEADERS)
 16. If text is literally " , it is invalid [ Done ]
 
 FILE FORMAT
-17. A file like this "blah.csv.csv" is invalid [ ]
+17. A file like this "blah.csv.csv" is invalid [ Done ]
 18. A nonexistent file is invalid [ Done ]
