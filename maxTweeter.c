@@ -1,3 +1,6 @@
+/* Will clean this up later */
+/* We almost have all our error checking done */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
