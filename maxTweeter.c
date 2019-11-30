@@ -640,8 +640,16 @@ bool checkColumnValidity(FILE* fp, bool* headerBoolArr, int headerTokenCount)
     return true; // Text below header is formatted OK
 } // checkColumnValidity()
 
+
+void cleanUp(HeaderList* headerList, char* lineCopyPtr, FILE* fp)
+{
+    destroyHeaderList(headerList);
+    free(lineCopyPtr);
+    fclose(fp);
+}
+
 /*
- * TODO Return true if 
+ * Return true if 
  * 1) file has an invalid header
  * 2) file has an invalid text (below the header)
  */
@@ -650,7 +658,7 @@ bool invalidFileContents(char* fileName)
     FILE* fp = fopen(fileName, "r");
     char line[MAXCHARS];
     fgets(line, MAXCHARS, fp);
-
+    
     if(fileHasEmptyHeader(line))
     {
 	fclose(fp);
@@ -658,18 +666,18 @@ bool invalidFileContents(char* fileName)
     }
 
     char* lineCopy = strdup(line);
-    char* lineCopyPtr = lineCopy;    
+    // Store a ptr to the line because line will be modified by strsep() 
+    // we will free() this ptr later
+    char* lineCopyPtr = lineCopy;
     int headerTokenCount = countHeaderTokens(lineCopy);
-    lineCopy = strdup(line);
+    lineCopy = strdup(line); // Need to recopy the string after being parsed
 
     HeaderList* headerList = createHeaderList();
     bool headerValid = checkHeaderValidity(headerList, lineCopy, headerTokenCount);
 
     if(!headerValid)
     {
-        destroyHeaderList(headerList);
-	free(lineCopyPtr);
-	fclose(fp);
+	cleanUp(headerList, lineCopyPtr, fp);
 	return true;
     }
 
@@ -679,8 +687,10 @@ bool invalidFileContents(char* fileName)
     bool isColumnValid = checkColumnValidity(fp, headerBoolArr, headerTokenCount);
     
     if(!isColumnValid)
+    {
+	cleanUp(headerList, lineCopyPtr, fp);
 	return true;
-    // TODO: clean up - free the header list
+    }
     
     return false; // Header is valid    
 } // invalidHeader()
