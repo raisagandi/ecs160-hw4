@@ -17,11 +17,17 @@ Some of the CSV files (with too many lines) are not in /in because
 
 RUNNING AFL
 
+# In TERMINAL 1
+
 # launching the AFL Docker container
 docker run --security-opt seccomp=unconfined --name=afl-container -it caseycas/afl-docker
 
+# IN TERMINAL 2 (our local filesystem)
+
 # put our files(or directory) in the root of the afl-container
 docker cp ecs160-hw4 afl-container:/
+
+# BACK TO TERMINAL 1, inside the Docker container
 
 # compile our code
 cd ecs160-hw4
