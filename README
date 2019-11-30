@@ -45,7 +45,7 @@ Testing TODO (please cross off each item when done):
 4. Valid file should have MAXLENLINE lines [ Done ]
 5. Valid file should have MAXCHARS per line [ Done ]
 6. Check for empty header [ Done ]
-7. Put everything - logic, dictionary - in maxTweeter.c [ Done ]
+7. Put everything - logic, data structure - in maxTweeter.c [ Done ]
 
 HEADERS
 8. A valid file should NOT have duplicate headers [ Done ]
