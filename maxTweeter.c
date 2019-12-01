@@ -282,7 +282,7 @@ void printList(TweeterList* list)
 bool fileNotExist(char* fileName)
 {
     if(access(fileName, F_OK) != -1)
-         return false; // File exists
+   	return false; // File exists
     return true;
 } // fileNotExist()
 
@@ -582,6 +582,30 @@ void fillBoolArr(bool* headerBoolArr, HeaderList* headerList)
 } // fillBoolArr()
 
 
+/*
+ * Returns true if line contains all spaces
+ * It can also end with a newline
+ */
+bool entireLineIsAllSpace(char* line)
+{
+    bool lineIsAllSpace = true;
+
+    if(line[strlen(line) - 1] == '\n' ||
+       isspace(line[strlen(line) - 1]))
+       {
+           for(int pos = 0; pos < strlen(line) - 1; pos++)
+	   {
+               if(!isspace(line[pos]))
+	       {
+	           lineIsAllSpace = false;
+		   break;
+	       }	       
+	   }
+       }
+       return lineIsAllSpace;
+} // entireLineIsAllSpace()
+
+
 /* 
  * Check if text below header is valid
  *  - text (per line) has the same number of fields as the header
@@ -607,7 +631,17 @@ bool checkColumnValidity(FILE* fp, bool* headerBoolArr, int headerTokenCount)
 	lineCopyPtr = lineCopy;
         char* token = NULL;
 	int pos = 0;
-	
+
+	// Line is empty or only contains newline
+	if(line[0] == '\0' || line[0] == '\n')
+	{
+	    continue;
+        }
+
+        // Check if entire line is all space
+	if(entireLineIsAllSpace(lineCopy))
+	    continue;
+
 	while((token = strsep(&lineCopy, ",")) != NULL)            
         {
             if(pos == headerTokenCount)
