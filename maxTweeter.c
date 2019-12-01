@@ -525,7 +525,7 @@ bool checkHeaderValidity(HeaderList* headerList, char* header, int tokenCount)
 	// https://stackoverflow.com/questions/2693776/removing-trailing-newline-character-from-fgets-input
 	if(token[strlen(token)-1] == '\n')
 	    strtok(token, "\n");
-	
+
 	// Check for name token
         if(strcmp(token, "name") == 0 || strcmp(token, "\"name\"") == 0)
             hasNameToken = true;
@@ -621,7 +621,7 @@ bool checkColumnValidity(FILE* fp, bool* headerBoolArr, int headerTokenCount)
 {
     char line[MAXCHARS];
     bool numTokensNotEqualHeader = false, tokenIsQuote = false,
-             onlyOneSurroundingQuote = false, textAndHeaderNotMatch = false;
+             onlyOneSurroundingQuote = false, textAndHeaderNotMatchQuotes = false;
     char* lineCopy = NULL;
     char *lineCopyPtr = NULL;
 
@@ -674,7 +674,7 @@ bool checkColumnValidity(FILE* fp, bool* headerBoolArr, int headerTokenCount)
 	    } // Text and header match (surrounding quotes)
             else
 	    {
-	        textAndHeaderNotMatch = true;
+	        textAndHeaderNotMatchQuotes = true;
 		break;
 	    } // The text and header don't match (surrounding quotes) 
 	} 
@@ -689,7 +689,7 @@ bool checkColumnValidity(FILE* fp, bool* headerBoolArr, int headerTokenCount)
     free(lineCopyPtr);
 
     if(numTokensNotEqualHeader || tokenIsQuote 
-		    || onlyOneSurroundingQuote || textAndHeaderNotMatch)
+           || onlyOneSurroundingQuote || textAndHeaderNotMatchQuotes)
     {
 	return false;
     }
@@ -747,8 +747,9 @@ bool invalidFileContents(char* fileName)
     cleanUp(headerList, lineCopyPtr, fp);
 
     if(!isColumnValid)
+    {
 	return true;
-    
+    }
     return false; // Header is valid    
 } // invalidHeader()
 
