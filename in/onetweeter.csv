@@ -1,0 +1,2 @@
+,tweet_id,airline_sentiment,airline_sentiment_confidence,negativereason,negativereason_confidence,airline,airline_sentiment_gold,name,negativereason_gold,retweet_count,text,tweet_coord,tweet_created,tweet_location,user_timezone
+11380,215240705,positive,1,,,Delta,,steplin,,0,@JetBlue Hopefully now my application for JetBlue donut designer will finally go through the proper channels.,,2015-02-23 10:16:43 -0800,NYC,Eastern Time (US & Canada)
