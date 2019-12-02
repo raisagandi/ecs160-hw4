@@ -6,6 +6,7 @@ File structure:
 > maxTweeter.c
 > /in
 > /out
+> /largecsv
 
 We need the directories /in and /out for running AFL on our program
 ./in contains the test csv files that I created
@@ -77,5 +78,5 @@ PENDING Piazza answer
 
 CSV guide:
 
-test.csv is an invalid file because one of the tweets is surrounded by quotes and the header isn't
- 
+1. test.csv is an invalid file because one of the tweets is surrounded by quotes and the header isn't
+2. We've placed large CSV files in another directory (/largecsv)
